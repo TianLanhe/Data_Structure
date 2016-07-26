@@ -6,97 +6,97 @@
 #define ERROR -1
 #define true 1
 #define false 0
-#define DG 1    		//ÓĞÏòÍ¼
-#define DN 2			//ÓĞÏòÍø
-#define UDG 3 			//ÎŞÏòÍ¼
-#define UDN 4 			//ÎŞÏòÍø
-#define MAXVEX 20		//×î´ó¶¥µãÊı
+#define DG 1    		//æœ‰å‘å›¾
+#define DN 2			//æœ‰å‘ç½‘
+#define UDG 3 			//æ— å‘å›¾
+#define UDN 4 			//æ— å‘ç½‘
+#define MAXVEX 20		//æœ€å¤§é¡¶ç‚¹æ•°
 
 typedef int GraphKind;
 typedef int TElemType;
-typedef struct _cstree{					//º¢×ÓĞÖµÜÁ´±íÊ÷
+typedef struct _cstree{					//å­©å­å…„å¼Ÿé“¾è¡¨æ ‘
 	TElemType data;
-	struct _cstree *firstchild;			//×óº¢×Ó
-	struct _cstree *nextsibling;		//ÓÒº¢×Ó
+	struct _cstree *firstchild;			//å·¦å­©å­
+	struct _cstree *nextsibling;		//å³å­©å­
 }CSTNode;
 typedef struct _mgraph {
-	int vexnum;							//Í¼µÄµ±Ç°¶¥µãÊı
-	int arcnum;							//Í¼µÄµ±Ç°ÓĞÏò±ßÊı
-	int arcs[MAXVEX][MAXVEX];			//Í¼µÄ¶¥µãÁÚ½Ó¾ØÕó
-	GraphKind kind;						//Í¼µÄÖÖÀà
+	int vexnum;							//å›¾çš„å½“å‰é¡¶ç‚¹æ•°
+	int arcnum;							//å›¾çš„å½“å‰æœ‰å‘è¾¹æ•°
+	int arcs[MAXVEX][MAXVEX];			//å›¾çš„é¡¶ç‚¹é‚»æ¥çŸ©é˜µ
+	GraphKind kind;						//å›¾çš„ç§ç±»
 }MGraph;
 Status CreateDG(MGraph *graph);
-//´´½¨ÓĞÏòÍ¼£¬ÌáÊ¾ÓÃ»§ÊäÈë²¢¸ù¾İĞÅÏ¢´´½¨ÓĞÏòÍ¼ÁÚ½Ó¾ØÕó
+//åˆ›å»ºæœ‰å‘å›¾ï¼Œæç¤ºç”¨æˆ·è¾“å…¥å¹¶æ ¹æ®ä¿¡æ¯åˆ›å»ºæœ‰å‘å›¾é‚»æ¥çŸ©é˜µ
 Status CreateDN(MGraph *graph);
-//´´½¨ÓĞÏòÍø£¬ÌáÊ¾ÓÃ»§ÊäÈë²¢¸ù¾İĞÅÏ¢´´½¨ÓĞÏòÍøÁÚ½Ó¾ØÕó
+//åˆ›å»ºæœ‰å‘ç½‘ï¼Œæç¤ºç”¨æˆ·è¾“å…¥å¹¶æ ¹æ®ä¿¡æ¯åˆ›å»ºæœ‰å‘ç½‘é‚»æ¥çŸ©é˜µ
 Status CreateUDG(MGraph *graph);
-//´´½¨ÎŞÏòÍ¼£¬ÌáÊ¾ÓÃ»§ÊäÈë²¢¸ù¾İĞÅÏ¢´´½¨ÎŞÏòÍ¼ÁÚ½Ó¾ØÕó
+//åˆ›å»ºæ— å‘å›¾ï¼Œæç¤ºç”¨æˆ·è¾“å…¥å¹¶æ ¹æ®ä¿¡æ¯åˆ›å»ºæ— å‘å›¾é‚»æ¥çŸ©é˜µ
 Status CreateUDN(MGraph *graph);
-//´´½¨ÎŞÏòÍø£¬ÌáÊ¾ÓÃ»§ÊäÈë²¢¸ù¾İĞÅÏ¢´´½¨ÎŞÏòÍøÁÚ½Ó¾ØÕó
+//åˆ›å»ºæ— å‘ç½‘ï¼Œæç¤ºç”¨æˆ·è¾“å…¥å¹¶æ ¹æ®ä¿¡æ¯åˆ›å»ºæ— å‘ç½‘é‚»æ¥çŸ©é˜µ
 Status CreateGraph(MGraph *graph);
-//´´½¨Í¼£¬ÌáÊ¾ÓÃ»§ÊäÈë²¢´´½¨ÏàÓ¦ÀàĞÍµÄÍ¼
+//åˆ›å»ºå›¾ï¼Œæç¤ºç”¨æˆ·è¾“å…¥å¹¶åˆ›å»ºç›¸åº”ç±»å‹çš„å›¾
 Status DestriyGraph(MGraph *graph);
-//Ïú»ÙÍ¼graph£¬½«¸÷Ïî³ÉÔ±ÖÃ0
+//é”€æ¯å›¾graphï¼Œå°†å„é¡¹æˆå‘˜ç½®0
 int FirstAdjVex(MGraph graph,int v);
-//·µ»Ø¶¥µãvµÄµÚÒ»¸öÁÚ½Ó¶¥µã£¬Èôgraph²»´æÔÚ»òv²»ÊÇgraphµÄ¶¥µã»òvÃ»ÓĞÁÚ½Ó¶¥µã£¬Ôò·µ»Ø-1
+//è¿”å›é¡¶ç‚¹vçš„ç¬¬ä¸€ä¸ªé‚»æ¥é¡¶ç‚¹ï¼Œè‹¥graphä¸å­˜åœ¨æˆ–vä¸æ˜¯graphçš„é¡¶ç‚¹æˆ–væ²¡æœ‰é‚»æ¥é¡¶ç‚¹ï¼Œåˆ™è¿”å›-1
 int NextAdjVex(MGraph graph,int v,int w);
-//·µ»Ø¶¥µãvÏà¶ÔÓÚwµÄµÚÒ»¸öÁÚ½Ó¶¥µã£¬Èôgraph²»´æÔÚ»òv²»ÊÇgraphµÄ¶¥µã»òw²»ÊÇgraphµÄ¶¥µã»òÕßvÏà¶ÔÓÚwÖ®ºóÃ»ÓĞÁÚ½Ó¶¥µã£¬Ôò·µ»Ø-1
+//è¿”å›é¡¶ç‚¹vç›¸å¯¹äºwçš„ç¬¬ä¸€ä¸ªé‚»æ¥é¡¶ç‚¹ï¼Œè‹¥graphä¸å­˜åœ¨æˆ–vä¸æ˜¯graphçš„é¡¶ç‚¹æˆ–wä¸æ˜¯graphçš„é¡¶ç‚¹æˆ–è€…vç›¸å¯¹äºwä¹‹åæ²¡æœ‰é‚»æ¥é¡¶ç‚¹ï¼Œåˆ™è¿”å›-1
 Status InsertVex(MGraph *graph,int v);
-//ÔÚÍ¼graphÖĞÔöÌíĞÂ¶¥µãv£¬Èôgraph²»´æÔÚ»òÒÑ¾­´ïµ½MAXVEX£¬»òvĞ¡ÓÚ0´óÓÚµÈÓÚMAXVEX£¬Ôò·µ»ØERROR
-//Õâ¸ö·½·¨²»Ì«ºÃ£¬ÈİÒ×´òÂÒÏÈÇ°¶¥µãµÄĞòºÅ£¬ÓĞ´ı¸Ä½ø
+//åœ¨å›¾graphä¸­å¢æ·»æ–°é¡¶ç‚¹vï¼Œè‹¥graphä¸å­˜åœ¨æˆ–å·²ç»è¾¾åˆ°MAXVEXï¼Œæˆ–vå°äº0å¤§äºç­‰äºMAXVEXï¼Œåˆ™è¿”å›ERROR
+//è¿™ä¸ªæ–¹æ³•ä¸å¤ªå¥½ï¼Œå®¹æ˜“æ‰“ä¹±å…ˆå‰é¡¶ç‚¹çš„åºå·ï¼Œæœ‰å¾…æ”¹è¿›
 Status DeleteVex(MGraph *graph,int v);
-//´ÓÍ¼graphÖĞÉ¾³ı¶¥µãv£¬¼°ÆäÏà¹ØµÄ»¡¡£ÈôÍ¼graph²»´æÔÚ»ò¶¥µãv²»´æÔÚ£¬·µ»ØERROR
+//ä»å›¾graphä¸­åˆ é™¤é¡¶ç‚¹vï¼ŒåŠå…¶ç›¸å…³çš„å¼§ã€‚è‹¥å›¾graphä¸å­˜åœ¨æˆ–é¡¶ç‚¹vä¸å­˜åœ¨ï¼Œè¿”å›ERROR
 Status DeleteArc(MGraph *graph,int v,int w);
-//´ÓÍ¼graphÖĞÉ¾³ı»¡<v,w>£¬ÈôgraphÊÇÎŞÏòµÄ£¬Ôò»¹ĞèÉ¾³ı¶Ô³Æ»¡<w,v>¡£ÈôÍ¼graph²»´æÔÚ»ò¶¥µãv»òw²»´æ×Å£¬Ôò·µ»ØERROR
+//ä»å›¾graphä¸­åˆ é™¤å¼§<v,w>ï¼Œè‹¥graphæ˜¯æ— å‘çš„ï¼Œåˆ™è¿˜éœ€åˆ é™¤å¯¹ç§°å¼§<w,v>ã€‚è‹¥å›¾graphä¸å­˜åœ¨æˆ–é¡¶ç‚¹væˆ–wä¸å­˜ç€ï¼Œåˆ™è¿”å›ERROR
 Status InsertArc(MGraph *graph,int v,int w,int adj);
-//ÈôÍ¼ÖĞÃ»ÓĞ»¡<v,w>£¬ÔòÔÚÍ¼graphÖĞÔö¼Ó¸Ã»¡£¬ÈôgraphÊÇÎŞÏòµÄ£¬Ôò»¹ĞèÔö¼Ó¶Ô³Æ»¡<w,v>¡£ÈôÍ¼graph²»´æÔÚ»ò¶¥µãv»òw²»´æÔÚ»ò±ß<v,w>ÒÑ´æÔÚ£¬Ôò·µ»ØERROR
+//è‹¥å›¾ä¸­æ²¡æœ‰å¼§<v,w>ï¼Œåˆ™åœ¨å›¾graphä¸­å¢åŠ è¯¥å¼§ï¼Œè‹¥graphæ˜¯æ— å‘çš„ï¼Œåˆ™è¿˜éœ€å¢åŠ å¯¹ç§°å¼§<w,v>ã€‚è‹¥å›¾graphä¸å­˜åœ¨æˆ–é¡¶ç‚¹væˆ–wä¸å­˜åœ¨æˆ–è¾¹<v,w>å·²å­˜åœ¨ï¼Œåˆ™è¿”å›ERROR
 Status DFSTraverse(MGraph *graph,Status (*traverse)(int));
-//¶ÔÍ¼½øĞĞÉî¶ÈÓÅÏÈ±éÀú£¬¶ÔÃ¿¸ö¶¥µãµ÷ÓÃÒ»´Îtraverseº¯Êı(¶¥µãµÄÓ¦ÓÃº¯Êı)£¬ÈôÍ¼²»´æÔÚ»òÆäÖĞÒ»¸ö¶¥µãtraverseÊ§°Ü£¬·µ»ØERROR
+//å¯¹å›¾è¿›è¡Œæ·±åº¦ä¼˜å…ˆéå†ï¼Œå¯¹æ¯ä¸ªé¡¶ç‚¹è°ƒç”¨ä¸€æ¬¡traverseå‡½æ•°(é¡¶ç‚¹çš„åº”ç”¨å‡½æ•°)ï¼Œè‹¥å›¾ä¸å­˜åœ¨æˆ–å…¶ä¸­ä¸€ä¸ªé¡¶ç‚¹traverseå¤±è´¥ï¼Œè¿”å›ERROR
 Status DFSTraverse_sub(MGraph *graph,int start,Status (*traverse)(int),int *visit);
-//Éî¶ÈÓÅÏÈ±éÀúµÄ×Óº¯Êı£¬µİ¹éÊµÏÖÉî¶ÈÓÅÏÈ±éÀú¡£
+//æ·±åº¦ä¼˜å…ˆéå†çš„å­å‡½æ•°ï¼Œé€’å½’å®ç°æ·±åº¦ä¼˜å…ˆéå†ã€‚
 Status Print(int i);
-//¶¥µãµÄÓ¦ÓÃº¯Êı£¬´òÓ¡¶¥µãµÄĞòºÅ
+//é¡¶ç‚¹çš„åº”ç”¨å‡½æ•°ï¼Œæ‰“å°é¡¶ç‚¹çš„åºå·
 Status BFSTraverse(MGraph *graph,Status (*traverse)(int));
-//¶ÔÍ¼½øĞĞ¹ã¶ÈÓÅÏÈ±éÀú£¬¶ÔÃ¿¸ö¶¥µãµ÷ÓÃÒ»´Îtraverseº¯Êı(¶¥µãµÄÓ¦ÓÃº¯Êı)£¬ÈôÍ¼²»´æÔÚ»òÆäÖĞÒ»¸ö¶¥µãtraverseÊ§°Ü£¬·µ»ØERROR
+//å¯¹å›¾è¿›è¡Œå¹¿åº¦ä¼˜å…ˆéå†ï¼Œå¯¹æ¯ä¸ªé¡¶ç‚¹è°ƒç”¨ä¸€æ¬¡traverseå‡½æ•°(é¡¶ç‚¹çš„åº”ç”¨å‡½æ•°)ï¼Œè‹¥å›¾ä¸å­˜åœ¨æˆ–å…¶ä¸­ä¸€ä¸ªé¡¶ç‚¹traverseå¤±è´¥ï¼Œè¿”å›ERROR
 Status DFSForest(MGraph graph,CSTNode **root);
-//½¨Á¢ÎŞÏòÍ¼graphµÄÉî¶ÈÓÅÏÈÉú³ÉÉ­ÁÖroot
+//å»ºç«‹æ— å‘å›¾graphçš„æ·±åº¦ä¼˜å…ˆç”Ÿæˆæ£®æ—root
 Status DFSTree(MGraph graph,int index,CSTNode *root,int visit[]);
-//´ÓµÚindex¸ö¶¥µã³ö·¢Éî¶ÈÓÅÏÈ±éÀúÍ¼graph£¬½¨Á¢ÒÔrootÎª¸ùµÄÉú³ÉÊ÷
+//ä»ç¬¬indexä¸ªé¡¶ç‚¹å‡ºå‘æ·±åº¦ä¼˜å…ˆéå†å›¾graphï¼Œå»ºç«‹ä»¥rootä¸ºæ ¹çš„ç”Ÿæˆæ ‘
 Status DestroyCSTree(CSTNode **root);
-//Ïú»ÙÊ÷root£¬Ê¹ÆäÎª¿ÕÊ÷
+//é”€æ¯æ ‘rootï¼Œä½¿å…¶ä¸ºç©ºæ ‘
 Status DestroyCSForest(CSTNode **root);
-//Ïú»ÙÉ­ÁÖroot£¬Ñ­»·É¾³ıroot¼°ÆäºóĞøµÄnextsibling.Ê¹Æä³ÉÎª¿ÕÉ­ÁÖ
+//é”€æ¯æ£®æ—rootï¼Œå¾ªç¯åˆ é™¤rootåŠå…¶åç»­çš„nextsibling.ä½¿å…¶æˆä¸ºç©ºæ£®æ—
 Status PreOrderTraverseCSTress(CSTNode *root,Status (*visit)(CSTNode *));
-//ÏÈĞò±éÀú(µİ¹é·¨)Ê÷root£¬¶ÔÃ¿¸ö½áµãµ÷ÓÃº¯ÊıvisitÒ»´ÎÇÒ½öÒ»´Î£¬Ò»µ©µ÷ÓÃÊ§°Ü£¬²Ù×÷Ê§°Ü
+//å…ˆåºéå†(é€’å½’æ³•)æ ‘rootï¼Œå¯¹æ¯ä¸ªç»“ç‚¹è°ƒç”¨å‡½æ•°visitä¸€æ¬¡ä¸”ä»…ä¸€æ¬¡ï¼Œä¸€æ—¦è°ƒç”¨å¤±è´¥ï¼Œæ“ä½œå¤±è´¥
 Status PreOrderTraverseCSForest(CSTNode *root,Status (*visit)(CSTNode *));
-//ÏÈĞò±éÀú(µİ¹é·¨)É­ÁÖroot£¬¶ÔÃ¿¸ö½áµãµ÷ÓÃº¯ÊıvisitÒ»´ÎÇÒ½öÒ»´Î£¬Ò»µ©µ÷ÓÃÊ§°Ü£¬²Ù×÷Ê§°Ü
+//å…ˆåºéå†(é€’å½’æ³•)æ£®æ—rootï¼Œå¯¹æ¯ä¸ªç»“ç‚¹è°ƒç”¨å‡½æ•°visitä¸€æ¬¡ä¸”ä»…ä¸€æ¬¡ï¼Œä¸€æ—¦è°ƒç”¨å¤±è´¥ï¼Œæ“ä½œå¤±è´¥
 Status PrintCSTree(CSTNode *node);
-//±éÀúº¯ÊıµÄ¹¦ÄÜº¯Êı£¬´òÓ¡½ÚµãµÄÊı¾İÖµ
+//éå†å‡½æ•°çš„åŠŸèƒ½å‡½æ•°ï¼Œæ‰“å°èŠ‚ç‚¹çš„æ•°æ®å€¼
 Status MiniSpanTree_PRIM(MGraph graph,int start);
-//ÆÕÀïÄ··¨Çó´ÓµÚstart¸ö¶¥µã³ö·¢¹¹ÔìÍøgraphµÄ×îĞ¡Éú³ÉÊ÷£¬Êä³ö¸÷Ìõ±ß¡£Èôstart´óÓÚµÈÓÚgraph¶¥µãÊı£¬·µ»ØERROR
-//ËµÃ÷£º°üº¬´òÓ¡
+//æ™®é‡Œå§†æ³•æ±‚ä»ç¬¬startä¸ªé¡¶ç‚¹å‡ºå‘æ„é€ ç½‘graphçš„æœ€å°ç”Ÿæˆæ ‘ï¼Œè¾“å‡ºå„æ¡è¾¹ã€‚è‹¥startå¤§äºç­‰äºgraphé¡¶ç‚¹æ•°ï¼Œè¿”å›ERROR
+//è¯´æ˜ï¼šåŒ…å«æ‰“å°
 Status TopologicalSort(MGraph oldgraph,int toposequ[]);
-//ÈôÓĞÏòÍ¼(Íø)oldgraphÖĞÎŞ»ØÂ·£¬Ôò½«oldgraphµÄÒ»¸öÍØÆËĞòÁĞ±£´æÔÚtoposequÖĞ²¢·µ»ØOK¡£ÈôoldgraphÊÇÎŞÏòÍ¼(Íø)»òÓĞ»·£¬·µ»ØERROR
+//è‹¥æœ‰å‘å›¾(ç½‘)oldgraphä¸­æ— å›è·¯ï¼Œåˆ™å°†oldgraphçš„ä¸€ä¸ªæ‹“æ‰‘åºåˆ—ä¿å­˜åœ¨toposequä¸­å¹¶è¿”å›OKã€‚è‹¥oldgraphæ˜¯æ— å‘å›¾(ç½‘)æˆ–æœ‰ç¯ï¼Œè¿”å›ERROR
 Status CopyGraph(MGraph *newgraph,MGraph oldgraph);
-//¸´ÖÆ(¿ËÂ¡)oldgraphµ½newgraphÖĞ
+//å¤åˆ¶(å…‹éš†)oldgraphåˆ°newgraphä¸­
 Status hasLoop_un_sub(MGraph graph,int start,int visit[]);
-//µİ¹éËÑË÷ÎŞÏòÍ¼(Íø)graph,ÈôÍ¼ÖĞ´æÔÚ»ØÂ·£¬·µ»ØERROR£¬·ñÔò·µ»ØOK
+//é€’å½’æœç´¢æ— å‘å›¾(ç½‘)graph,è‹¥å›¾ä¸­å­˜åœ¨å›è·¯ï¼Œè¿”å›ERRORï¼Œå¦åˆ™è¿”å›OK
 Status hasLoop_un(MGraph graph);
-//ÈôÎŞÏòÍ¼(Íø)graphÖĞÎŞ»ØÂ·£¬Ôò·µ»Øfalse£¬ÓĞ»ØÂ··µ»Øtrue¡£ÈôÊÇÓĞÏòÍ¼(Íø)£¬·µ»ØERROR£¬
+//è‹¥æ— å‘å›¾(ç½‘)graphä¸­æ— å›è·¯ï¼Œåˆ™è¿”å›falseï¼Œæœ‰å›è·¯è¿”å›trueã€‚è‹¥æ˜¯æœ‰å‘å›¾(ç½‘)ï¼Œè¿”å›ERRORï¼Œ
 Status hasLoop(MGraph graph);
-//ÅĞ¶ÏÍ¼ÖĞÊÇ·ñ´æÔÚ£¬ÓĞ·µ»Øtrue£¬·ñÔò·µ»Øfalse
+//åˆ¤æ–­å›¾ä¸­æ˜¯å¦å­˜åœ¨ï¼Œæœ‰è¿”å›trueï¼Œå¦åˆ™è¿”å›false
 Status DijShortPath(MGraph graph,int v,int path[][MAXVEX+2],int *dist);
-//¸ù¾İDijkstraËã·¨ÇóÍ¼graphÖĞv¶¥µãµ½ÆäËû¶¥µãµÄ¾àÀë(µ½×ÔÉí¾àÀëÎª0£¬ÎŞ·¨µ½´ï¾àÀëÎªMAXINT)
-//path[w][...]´æ´¢µãvµ½wµÄ×î¶ÌÂ·¾¶£¬ÆäÖĞpath[w][0]±íÊ¾×î¶ÌÂ·¾¶µÄ¶¥µã¸öÊı(°üÀ¨ÆğµãÓëÖÕµã)£¬½ÓÏÂÀ´n¸öÔªËØÎª¶¥µã¡£dist[w]±íÊ¾¶¥µãvµ½wµÄ¾àÀë
+//æ ¹æ®Dijkstraç®—æ³•æ±‚å›¾graphä¸­vé¡¶ç‚¹åˆ°å…¶ä»–é¡¶ç‚¹çš„è·ç¦»(åˆ°è‡ªèº«è·ç¦»ä¸º0ï¼Œæ— æ³•åˆ°è¾¾è·ç¦»ä¸ºMAXINT)
+//path[w][...]å­˜å‚¨ç‚¹våˆ°wçš„æœ€çŸ­è·¯å¾„ï¼Œå…¶ä¸­path[w][0]è¡¨ç¤ºæœ€çŸ­è·¯å¾„çš„é¡¶ç‚¹ä¸ªæ•°(åŒ…æ‹¬èµ·ç‚¹ä¸ç»ˆç‚¹)ï¼Œæ¥ä¸‹æ¥nä¸ªå…ƒç´ ä¸ºé¡¶ç‚¹ã€‚dist[w]è¡¨ç¤ºé¡¶ç‚¹våˆ°wçš„è·ç¦»
 Status FloShortPath(MGraph graph,int path[MAXVEX][MAXVEX][MAXVEX+2],int dist[MAXVEX][MAXVEX]);
-//¸ù¾İFloydËã·¨ÇóÍ¼graphÖĞÃ¿¸ö¶¥µãµ½ÆäÓà¶¥µãµÄ¾àÀë(µ½×ÔÉí¾àÀëÎª0£¬ÎŞ·¨µ½´ï¾àÀëÎªMAXINT)
-//path[v][w][...]´æ´¢µãvµ½wµÄ×î¶ÌÂ·¾¶£¬ÆäÖĞpath[v][w][0]±íÊ¾×î¶ÌÂ·¾¶µÄ¶¥µã¸öÊı(°üÀ¨ÆğµãÓëÖÕµã)£¬½ÓÏÂÀ´n¸öÔªËØÎª¶¥µã¡£dist[v][w]±íÊ¾¶¥µãvµ½wµÄ¾àÀë
+//æ ¹æ®Floydç®—æ³•æ±‚å›¾graphä¸­æ¯ä¸ªé¡¶ç‚¹åˆ°å…¶ä½™é¡¶ç‚¹çš„è·ç¦»(åˆ°è‡ªèº«è·ç¦»ä¸º0ï¼Œæ— æ³•åˆ°è¾¾è·ç¦»ä¸ºMAXINT)
+//path[v][w][...]å­˜å‚¨ç‚¹våˆ°wçš„æœ€çŸ­è·¯å¾„ï¼Œå…¶ä¸­path[v][w][0]è¡¨ç¤ºæœ€çŸ­è·¯å¾„çš„é¡¶ç‚¹ä¸ªæ•°(åŒ…æ‹¬èµ·ç‚¹ä¸ç»ˆç‚¹)ï¼Œæ¥ä¸‹æ¥nä¸ªå…ƒç´ ä¸ºé¡¶ç‚¹ã€‚dist[v][w]è¡¨ç¤ºé¡¶ç‚¹våˆ°wçš„è·ç¦»
 
 Status FloShortPath(MGraph graph,int path[MAXVEX][MAXVEX][MAXVEX+2],int dist[MAXVEX][MAXVEX]){
 	int i,j,k;
 	if(path == NULL || dist == NULL)return ERROR;
 	if(graph.vexnum == 0)return ERROR;
-	for(i=0;i<graph.vexnum;i++){		//ÒÔÏÂÊÇ³õÊ¼»¯²¿·Ö
+	for(i=0;i<graph.vexnum;i++){		//ä»¥ä¸‹æ˜¯åˆå§‹åŒ–éƒ¨åˆ†
 		for(j=0;j<graph.vexnum;j++){
 			dist[i][j]=graph.arcs[i][j];
 			path[i][j][0]=0;
@@ -111,7 +111,7 @@ Status FloShortPath(MGraph graph,int path[MAXVEX][MAXVEX][MAXVEX+2],int dist[MAX
 		path[i][i][1]=i;
 		dist[i][i]=0;
 	}
-	for(i=0;i<graph.vexnum;i++){		//ÒÔÏÂÊÇ´¦Àí²¿·Ö
+	for(i=0;i<graph.vexnum;i++){		//ä»¥ä¸‹æ˜¯å¤„ç†éƒ¨åˆ†
 		for(j=0;j<graph.vexnum;j++){
 			for(k=0;k<graph.vexnum;k++){
 				if(dist[j][i]<MAXINT && dist[i][k]<MAXINT){
@@ -137,9 +137,9 @@ Status DijShortPath(MGraph graph,int v,int path[][MAXVEX+2],int *dist){
 	int vexter;
 	if(graph.vexnum == 0)return ERROR;
 	if(path == NULL  || dist == NULL)return ERROR;
-	if(v >= graph.vexnum)return ERROR;		//ÅĞ¶Ï²ÎÊıºÏ·¨ĞÔ
-	for(i=0;i<graph.vexnum;i++){		//ÒÔÏÂÊÇ³õÊ¼»¯²¿·Ö
-		dist[i]=graph.arcs[v][i];		//dist[i]±íÊ¾¶¥µãvÖ±½Ó»ò¾­¹ıÖĞ¼ä½Úµã¼ä½Óµ½iµÄ¾àÀë
+	if(v >= graph.vexnum)return ERROR;		//åˆ¤æ–­å‚æ•°åˆæ³•æ€§
+	for(i=0;i<graph.vexnum;i++){		//ä»¥ä¸‹æ˜¯åˆå§‹åŒ–éƒ¨åˆ†
+		dist[i]=graph.arcs[v][i];		//dist[i]è¡¨ç¤ºé¡¶ç‚¹vç›´æ¥æˆ–ç»è¿‡ä¸­é—´èŠ‚ç‚¹é—´æ¥åˆ°içš„è·ç¦»
 		path[i][0]=0;
 		path[i][1]=MAXINT;
 		if(dist[i] != MAXINT){
@@ -147,19 +147,19 @@ Status DijShortPath(MGraph graph,int v,int path[][MAXVEX+2],int *dist){
 			path[i][1]=v;
 		}
 	}
-	path[v][0]=1;						//pathµÄ´æ´¢½á¹¹Îªpath[0]=length±íÊ¾µãµÄ¸öÊı
-	path[v][1]=v;						//½ÓÏÂÀ´length¸öÔªËØÎª¶¥µã£¬µÚlength+1¸öÔªËØ
-	path[v][2]=0;						//Ôİ´æ¾àÀëdist£¬Êı×édistÓÃ-1±íÊ¾ÒÑ²¢ÈëSÖĞ£¬ËÑË÷½áÊøºóÔÙ¸³Öµ¸ødist
-	dist[v]=-1;								//-1±íÊ¾¸ÃµãÒÑ²¢ÈëSÖĞ
-	for(i=1;i<graph.vexnum;i++){		//ÒÔÏÂÊÇ´¦Àí²¿·Ö
+	path[v][0]=1;						//pathçš„å­˜å‚¨ç»“æ„ä¸ºpath[0]=lengthè¡¨ç¤ºç‚¹çš„ä¸ªæ•°
+	path[v][1]=v;						//æ¥ä¸‹æ¥lengthä¸ªå…ƒç´ ä¸ºé¡¶ç‚¹ï¼Œç¬¬length+1ä¸ªå…ƒç´ 
+	path[v][2]=0;						//æš‚å­˜è·ç¦»distï¼Œæ•°ç»„distç”¨-1è¡¨ç¤ºå·²å¹¶å…¥Sä¸­ï¼Œæœç´¢ç»“æŸåå†èµ‹å€¼ç»™dist
+	dist[v]=-1;								//-1è¡¨ç¤ºè¯¥ç‚¹å·²å¹¶å…¥Sä¸­
+	for(i=1;i<graph.vexnum;i++){		//ä»¥ä¸‹æ˜¯å¤„ç†éƒ¨åˆ†
 		mindist=MAXINT;
-		for(j=0;j<graph.vexnum;j++){	//Ñ¡Ò»¸ödist²»Îª-1ÇÒ×îĞ¡µÄ¶¥µã
+		for(j=0;j<graph.vexnum;j++){	//é€‰ä¸€ä¸ªdistä¸ä¸º-1ä¸”æœ€å°çš„é¡¶ç‚¹
 			if(dist[j] != -1 && dist[j] < mindist){
 				mindist=dist[j];
 				vexter=j;
 			}
 		}
-		if(mindist != MAXINT){			//Èç¹ûÃ»Ñ¡µ½£¬ËµÃ÷Ê£ÏÂµÄµãÒªÃ´¶¼ÊÇ-1ÒªÃ´¶¼ÊÇMAXINT£¬ºóÕßÎŞ·¨µ½´ï£¬¿ÉÒÔÌå¼ìÌø³ö
+		if(mindist != MAXINT){			//å¦‚æœæ²¡é€‰åˆ°ï¼Œè¯´æ˜å‰©ä¸‹çš„ç‚¹è¦ä¹ˆéƒ½æ˜¯-1è¦ä¹ˆéƒ½æ˜¯MAXINTï¼Œåè€…æ— æ³•åˆ°è¾¾ï¼Œå¯ä»¥ä½“æ£€è·³å‡º
 			path[vexter][0]++;
 			path[vexter][path[vexter][0]]=vexter;
 			path[vexter][path[vexter][0]+1]=dist[vexter];
@@ -204,9 +204,9 @@ Status hasLoop_un_sub(MGraph graph,int start,int visit[]){
 }
 Status hasLoop(MGraph graph){
 	int toposequ[MAXVEX];
-	if(graph.kind == DG || graph.kind == DN)			//ÓĞÏòÍ¼(Íø)ÓÃÍØÆËÅÅĞòÅĞ¶ÏÊÇ·ñÓĞ»ØÂ·
+	if(graph.kind == DG || graph.kind == DN)			//æœ‰å‘å›¾(ç½‘)ç”¨æ‹“æ‰‘æ’åºåˆ¤æ–­æ˜¯å¦æœ‰å›è·¯
 		return TopologicalSort(graph,toposequ)==ERROR?true:false;
-	else												//ÎŞÏòÍ¼(Íø)½èÖúÉî¶È±éÀúÅĞ¶ÏÊÇ·ñÓĞ»ØÂ·
+	else												//æ— å‘å›¾(ç½‘)å€ŸåŠ©æ·±åº¦éå†åˆ¤æ–­æ˜¯å¦æœ‰å›è·¯
 		return hasLoop_un(graph);
 }
 Status CopyGraph(MGraph *newgraph,MGraph oldgraph){
@@ -226,37 +226,37 @@ Status TopologicalSort(MGraph oldgraph,int toposequ[]){
 	int count;
 	int column,row;
 	int flag;
-	int visit[MAXVEX];					//ÍØÆËÅÅĞòÖ»Õë¶ÔÓĞÏòÍ¼
-	MGraph graph;						//Èç¹ûÊÇÎŞÏòÍ¼£¬·µ»ØERROR
+	int visit[MAXVEX];					//æ‹“æ‰‘æ’åºåªé’ˆå¯¹æœ‰å‘å›¾
+	MGraph graph;						//å¦‚æœæ˜¯æ— å‘å›¾ï¼Œè¿”å›ERROR
 	if(oldgraph.kind == UDG || oldgraph.kind == UDN)return ERROR;
 	if(toposequ == NULL)return ERROR;
-	CopyGraph(&graph,oldgraph);			//ÓÉÓÚÑ¡³öÒ»¸ö¶¥µãºóÒªÉ¾³ıÕâ¸ö¶¥µã¼°Æä¹ØÁªµÄ±ß£¬Òò´ËÊÇÆÆ»µĞÔµÄ
-	count=0;							//¹ÊcopyÁËÒ»¸öĞÂµÄÁÙÊ±Í¼À´²Ù×÷£¬¿É²Î¿¼ÁÚ½Ó±í´æ´¢½á¹¹µÄÍ¼µÄÁíÒ»¸öÖÖ¸üºÃµÄ·½·¨
+	CopyGraph(&graph,oldgraph);			//ç”±äºé€‰å‡ºä¸€ä¸ªé¡¶ç‚¹åè¦åˆ é™¤è¿™ä¸ªé¡¶ç‚¹åŠå…¶å…³è”çš„è¾¹ï¼Œå› æ­¤æ˜¯ç ´åæ€§çš„
+	count=0;							//æ•…copyäº†ä¸€ä¸ªæ–°çš„ä¸´æ—¶å›¾æ¥æ“ä½œï¼Œå¯å‚è€ƒé‚»æ¥è¡¨å­˜å‚¨ç»“æ„çš„å›¾çš„å¦ä¸€ä¸ªç§æ›´å¥½çš„æ–¹æ³•
 	for(row=0;row<graph.vexnum;row++)visit[row]=false;
 	while(count < graph.vexnum){
-		for(column=0;column<graph.vexnum;column++){	//´ÓÍ·¿ªÊ¼ËÑË÷£¬ËÑË÷µÚÒ»¸öÃ»·ÃÎÊ¹ı¶øÇÒÈë¶ÈÎª0µÄ¶¥µã
+		for(column=0;column<graph.vexnum;column++){	//ä»å¤´å¼€å§‹æœç´¢ï¼Œæœç´¢ç¬¬ä¸€ä¸ªæ²¡è®¿é—®è¿‡è€Œä¸”å…¥åº¦ä¸º0çš„é¡¶ç‚¹
 			flag=true;
 			for(row=0;row<graph.vexnum;row++){
 				if(visit[column] == true || graph.arcs[row][column] != MAXINT)
 					flag=false;
 			}
-			if(flag == true){						//ÈôÕÒµ½ÁË£¬ÔòÉèÖÃvisitÒÑ·ÃÎÊ£¬¼ÓÈëÍØÆËĞòÁĞ
+			if(flag == true){						//è‹¥æ‰¾åˆ°äº†ï¼Œåˆ™è®¾ç½®visitå·²è®¿é—®ï¼ŒåŠ å…¥æ‹“æ‰‘åºåˆ—
 				visit[column]=true;
 				toposequ[count]=column;
 				count++;
 				for(row=0;row<graph.vexnum;row++){
-					graph.arcs[column][row]=MAXINT;	//½«Óë¸Ã¶¥µã¹ØÁªµÄ±ßÈ«²¿È¥µô
+					graph.arcs[column][row]=MAXINT;	//å°†ä¸è¯¥é¡¶ç‚¹å…³è”çš„è¾¹å…¨éƒ¨å»æ‰
 				}
-				break;								//Ìø³öÑ­»·ÖØĞÂ¿ªÊ¼´ÓÍ·ËÑË÷
+				break;								//è·³å‡ºå¾ªç¯é‡æ–°å¼€å§‹ä»å¤´æœç´¢
 			}
-		}											//Èç¹ûÕÒÁËÒ»È¦¶¼Ã»ÓĞÕÒµ½Èë¶ÈÎª0µÄ¶¥µã
+		}											//å¦‚æœæ‰¾äº†ä¸€åœˆéƒ½æ²¡æœ‰æ‰¾åˆ°å…¥åº¦ä¸º0çš„é¡¶ç‚¹
 		if(flag == false && count<graph.vexnum){
 			DestriyGraph(&graph);
-			return ERROR;							//ÒªÃ´ËùÓĞ¶¥µã¶¼·ÃÎÊ¹ıÁË£¬ÒªÃ´ÎŞ·¨ÕÒµ½ÍØÆËĞòÁĞ
+			return ERROR;							//è¦ä¹ˆæ‰€æœ‰é¡¶ç‚¹éƒ½è®¿é—®è¿‡äº†ï¼Œè¦ä¹ˆæ— æ³•æ‰¾åˆ°æ‹“æ‰‘åºåˆ—
 		}
 	}
-	DestriyGraph(&graph);							//¼ÇµÃÊ¹ÓÃÍêºóÏú»Ù¿ËÂ¡µÄÍ¼£¬µ«ÆäÊµ²¢Ã»ÓĞÉæ¼°µ½¶¯Ì¬·ÖÅä
-	return OK;										//²»»á·¢ÉúÄÚ´æĞ¹Â©£¬Ïú²»Ïú»Ù¶¼ÎŞËùÎ½À²
+	DestriyGraph(&graph);							//è®°å¾—ä½¿ç”¨å®Œåé”€æ¯å…‹éš†çš„å›¾ï¼Œä½†å…¶å®å¹¶æ²¡æœ‰æ¶‰åŠåˆ°åŠ¨æ€åˆ†é…
+	return OK;										//ä¸ä¼šå‘ç”Ÿå†…å­˜æ³„æ¼ï¼Œé”€ä¸é”€æ¯éƒ½æ— æ‰€è°“å•¦
 }
 Status MiniSpanTree_PRIM(MGraph graph,int start){
 	int i,j;
@@ -265,7 +265,7 @@ Status MiniSpanTree_PRIM(MGraph graph,int start){
 		int vexno;
 		int lowcost;
 	}closedge[MAXVEX];
-	if(start >= graph.vexnum)return ERROR;		//ÅĞ¶Ï²ÎÊıºÏ·¨ĞÔ
+	if(start >= graph.vexnum)return ERROR;		//åˆ¤æ–­å‚æ•°åˆæ³•æ€§
 	for(i=0;i<graph.vexnum;i++){
 		closedge[i].vexno=start;
 		if(i != start){
@@ -273,16 +273,16 @@ Status MiniSpanTree_PRIM(MGraph graph,int start){
 		}else{
 			closedge[i].lowcost=-1;
 		}
-	}											//³õÊ¼»¯closedgeÊı×é£¬lowcost=-1±íÊ¾²¢ÈëÒÑÑ¡¼¯ºÏÖĞ
+	}											//åˆå§‹åŒ–closedgeæ•°ç»„ï¼Œlowcost=-1è¡¨ç¤ºå¹¶å…¥å·²é€‰é›†åˆä¸­
 	for(i=1;i<graph.vexnum;i++){
 		for(j=0;j<graph.vexnum;j++)
 			if(closedge[j].lowcost != -1)
-				break;						//²»Ö±½ÓÓÃindex=0µÄÔ­ÒòÊÇÓĞ¿ÉÄÜclosedge[0].lowcostÎª-1
+				break;						//ä¸ç›´æ¥ç”¨index=0çš„åŸå› æ˜¯æœ‰å¯èƒ½closedge[0].lowcostä¸º-1
 		index=j;
 		for(j=j+1;j<graph.vexnum;j++){
 			if(closedge[j].lowcost != -1 && closedge[j].lowcost < closedge[index].lowcost)
 				index=j;
-		}												//ÒÔÉÏÁ½¸öforÑ¡³öclosedgeÊı×éÀïµÚÒ»¸ölowcost²»Îª-1µÄ×îĞ¡µÄÏÂ±ê
+		}												//ä»¥ä¸Šä¸¤ä¸ªforé€‰å‡ºclosedgeæ•°ç»„é‡Œç¬¬ä¸€ä¸ªlowcostä¸ä¸º-1çš„æœ€å°çš„ä¸‹æ ‡
 		printf("<%d,%d>  ",closedge[index].vexno,index);
 		closedge[index].lowcost=-1;
 		for(j=0;j<graph.vexnum;j++){
@@ -321,17 +321,17 @@ Status DFSTree(MGraph graph,int index,CSTNode *root,int visit[]){
 	int nextvex;
 	int first;
 	visit[index]=true;
-	first=true;										//Éî¶ÈÓÅÏÈ±éÀúrootµÄÃ¿Ò»¸öÁÚ½Ó¶¥µã£¬¹¹ÔìÉú³ÉÊ÷
+	first=true;										//æ·±åº¦ä¼˜å…ˆéå†rootçš„æ¯ä¸€ä¸ªé‚»æ¥é¡¶ç‚¹ï¼Œæ„é€ ç”Ÿæˆæ ‘
 	for(nextvex=FirstAdjVex(graph,index);nextvex>=0;nextvex=NextAdjVex(graph,index,nextvex)){
-		if(visit[nextvex] == false){				//Èç¹ûÃ»·ÃÎÊ¹ı£¬Ôò½«´Ë¶¥µãÁ¬½Óµ½rootÉÏ²¢µİ¹é¹¹½¨×ÓÊ÷
+		if(visit[nextvex] == false){				//å¦‚æœæ²¡è®¿é—®è¿‡ï¼Œåˆ™å°†æ­¤é¡¶ç‚¹è¿æ¥åˆ°rootä¸Šå¹¶é€’å½’æ„å»ºå­æ ‘
 			node=(CSTNode*)malloc(sizeof(CSTNode));
 			if(!node)return ERROR;
 			node->firstchild=NULL;
 			node->nextsibling=NULL;
-			node->data=nextvex;						//ÒÔÉÏ5ĞĞ³õÊ¼»¯Ò»¸öÊ÷½Úµã
+			node->data=nextvex;						//ä»¥ä¸Š5è¡Œåˆå§‹åŒ–ä¸€ä¸ªæ ‘èŠ‚ç‚¹
 			if(first){
 				root->firstchild=node;
-				first=false;						//º¢×ÓĞÖµÜÁ´±í£¬µÚÒ»¸öº¢×ÓÁ¬×Å¸¸Ç×£¬µÚ¶ş¸öº¢×ÓÁ¬×ÅµÚÒ»¸öº¢×Ó
+				first=false;						//å­©å­å…„å¼Ÿé“¾è¡¨ï¼Œç¬¬ä¸€ä¸ªå­©å­è¿ç€çˆ¶äº²ï¼Œç¬¬äºŒä¸ªå­©å­è¿ç€ç¬¬ä¸€ä¸ªå­©å­
 			}else{
 				pre->nextsibling=node;
 			}
@@ -375,7 +375,7 @@ Status PreOrderTraverseCSTress(CSTNode *root,Status (*visit)(CSTNode *)){
 }
 Status PreOrderTraverseCSForest(CSTNode *root,Status (*visit)(CSTNode *)){
 	CSTNode *tress;
-	for(tress=root;tress;tress=tress->nextsibling){		//¶ÔÉ­ÁÖrootµÄÃ¿¿ÃÊ÷¶¼µ÷ÓÃÒ»´ÎÇ°Ğò±éÀú
+	for(tress=root;tress;tress=tress->nextsibling){		//å¯¹æ£®æ—rootçš„æ¯æ£µæ ‘éƒ½è°ƒç”¨ä¸€æ¬¡å‰åºéå†
 		if(PreOrderTraverseCSTress(tress,visit) == ERROR)return ERROR;
 		printf("\n");
 	}
@@ -409,26 +409,26 @@ Status Print(int i){
 	return OK;
 }
 Status BFSTraverse(MGraph *graph,Status (*traverse)(int)){
-	int queue[MAXVEX];			//½èÖú¸¨Öú¶ÓÁĞqueueºÍ·ÃÎÊ±êÖ¾Êı×évisit
-	int top,buttom;				//top±íÊ¾¶ÓÁĞ¶ÓÊ×£¬buttom±íÊ¾¶ÓÁĞ¶ÓÎ²
+	int queue[MAXVEX];			//å€ŸåŠ©è¾…åŠ©é˜Ÿåˆ—queueå’Œè®¿é—®æ ‡å¿—æ•°ç»„visit
+	int top,buttom;				//topè¡¨ç¤ºé˜Ÿåˆ—é˜Ÿé¦–ï¼Œbuttomè¡¨ç¤ºé˜Ÿåˆ—é˜Ÿå°¾
 	int vexter;
 	int nextvex;
 	int visit[MAXVEX];
 	int i;
 	if(graph->vexnum == 0)return ERROR;
 	for(i=0;i<graph->vexnum;i++)visit[i]=false;
-	top=buttom=0;				//³õÊ¼»¯¶ÓÁĞ£¬¶ÓÊ×µÈÓÚ¶ÓÎ²±íÊ¾¶ÓÁĞÎª¿Õ
+	top=buttom=0;				//åˆå§‹åŒ–é˜Ÿåˆ—ï¼Œé˜Ÿé¦–ç­‰äºé˜Ÿå°¾è¡¨ç¤ºé˜Ÿåˆ—ä¸ºç©º
 	queue[buttom]=0;
-	buttom++;					//ÕâÁ½¾äÄ£ÄâÈë¶ÓÁĞ£¬½«¶¥µãĞòºÅÈë¶ÓÁĞ£¬È»ºó¶ÓÎ²ÏòºóÒ»¸ö	
+	buttom++;					//è¿™ä¸¤å¥æ¨¡æ‹Ÿå…¥é˜Ÿåˆ—ï¼Œå°†é¡¶ç‚¹åºå·å…¥é˜Ÿåˆ—ï¼Œç„¶åé˜Ÿå°¾å‘åä¸€ä¸ª	
 	visit[0]=true;
-	while(top != buttom){		//µ±¶ÓÁĞ²»¿ÕÊ±
+	while(top != buttom){		//å½“é˜Ÿåˆ—ä¸ç©ºæ—¶
 		vexter=queue[top];
-		top++;					//ÕâÁ½¾äÄ£Äâ³ö¶ÓÁĞ£¬½«¶¥µãĞòºÅ´Ó¶ÓÁĞÖĞµ¯³ö£¬²¢Ê¹¶ÓÊ×ÏòºóÒ»¸ö
-		if(traverse(vexter) == ERROR)return ERROR;	//·ÃÎÊ¶¥µã
+		top++;					//è¿™ä¸¤å¥æ¨¡æ‹Ÿå‡ºé˜Ÿåˆ—ï¼Œå°†é¡¶ç‚¹åºå·ä»é˜Ÿåˆ—ä¸­å¼¹å‡ºï¼Œå¹¶ä½¿é˜Ÿé¦–å‘åä¸€ä¸ª
+		if(traverse(vexter) == ERROR)return ERROR;	//è®¿é—®é¡¶ç‚¹
 		for(nextvex=FirstAdjVex(*graph,vexter);nextvex>=0;nextvex=NextAdjVex(*graph,vexter,nextvex)){
-			if(visit[nextvex] == false){	//Èç¹û¶¥µã»¹Î´·ÃÎÊ¹ı
+			if(visit[nextvex] == false){	//å¦‚æœé¡¶ç‚¹è¿˜æœªè®¿é—®è¿‡
 				visit[nextvex]=true;
-				queue[buttom]=nextvex;		//ÔòÈë¶ÓÁĞ
+				queue[buttom]=nextvex;		//åˆ™å…¥é˜Ÿåˆ—
 				buttom++;
 			}
 		}
@@ -451,9 +451,9 @@ Status InsertArc(MGraph *graph,int v,int w,int adj){
 	if(graph->vexnum == 0)return ERROR;
 	if(v<0 || v>=graph->vexnum)return ERROR;
 	if(w<0 || w>=graph->vexnum)return ERROR;
-	if(adj <= 0)return ERROR;						//ÅĞ¶Ï²ÎÊıµÄºÏ·¨ĞÔ
-	if(graph->arcs[v][w] != MAXINT)return ERROR;	//ÈôÒÑÓĞ±ß£¬·µ»Øerror
-	if(graph->kind == DG || graph->kind == UDG){	//Ìí¼Ó±ß£¬ÈôÊÇÎŞÏòÍ¼(Íø)£¬»¹ÓĞÌí¼Ó¶Ô³Æ±ß
+	if(adj <= 0)return ERROR;						//åˆ¤æ–­å‚æ•°çš„åˆæ³•æ€§
+	if(graph->arcs[v][w] != MAXINT)return ERROR;	//è‹¥å·²æœ‰è¾¹ï¼Œè¿”å›error
+	if(graph->kind == DG || graph->kind == UDG){	//æ·»åŠ è¾¹ï¼Œè‹¥æ˜¯æ— å‘å›¾(ç½‘)ï¼Œè¿˜æœ‰æ·»åŠ å¯¹ç§°è¾¹
 		graph->arcs[v][w]=1;
 		if(graph->kind == UDG)graph->arcs[w][v]=1;
 	}else{
@@ -466,40 +466,40 @@ Status InsertArc(MGraph *graph,int v,int w,int adj){
 Status InsertVex(MGraph *graph,int v){
 	int i,j;
 	if(graph->vexnum == 0 || graph->vexnum == MAXVEX)return ERROR;
-	if(v < 0 || v > graph->vexnum)return ERROR;			//ÅĞ¶ÏÍ¼ºÍ¶¥µãµÄºÏ·¨ĞÔ
+	if(v < 0 || v > graph->vexnum)return ERROR;			//åˆ¤æ–­å›¾å’Œé¡¶ç‚¹çš„åˆæ³•æ€§
 	for(i=graph->vexnum-1;i>=v;i--){
-		for(j=0;j<graph->vexnum;j++){				//½«¸ÃĞĞÒÔºóµÄ¶¥µã¾ùÍùºóÒÆÒ»ĞĞ
+		for(j=0;j<graph->vexnum;j++){				//å°†è¯¥è¡Œä»¥åçš„é¡¶ç‚¹å‡å¾€åç§»ä¸€è¡Œ
 			graph->arcs[i+1][j]=graph->arcs[i][j];
 		}
 	}
-	for(j=0;j<graph->vexnum;j++)graph->arcs[v][j]=MAXINT;	//¸ÃĞĞËùÓĞ±ßÖÃÁã
-	for(i=0;i<graph->vexnum+1;i++){					//½«¸ÃÁĞÒÔºóµÄ¶¥µã¾ùÍùºóÒÆÒ»ĞĞ
+	for(j=0;j<graph->vexnum;j++)graph->arcs[v][j]=MAXINT;	//è¯¥è¡Œæ‰€æœ‰è¾¹ç½®é›¶
+	for(i=0;i<graph->vexnum+1;i++){					//å°†è¯¥åˆ—ä»¥åçš„é¡¶ç‚¹å‡å¾€åç§»ä¸€è¡Œ
 		for(j=graph->vexnum-1;j>=v;j--){
 			graph->arcs[i][j+1]=graph->arcs[i][j];
 		}
 	}
-	for(i=0;i<graph->vexnum+1;i++)graph->arcs[i][v]=MAXINT;	//¸ÃÁĞËùÓĞ±ßÖÃÁã
+	for(i=0;i<graph->vexnum+1;i++)graph->arcs[i][v]=MAXINT;	//è¯¥åˆ—æ‰€æœ‰è¾¹ç½®é›¶
 	graph->vexnum++;
 	return OK;
 }
 Status DeleteVex(MGraph *graph,int v){
 	int i,j;
 	if(graph->vexnum == 0)return ERROR;
-	if(v < 0 || v >= graph->vexnum)return ERROR;	//ÅĞ¶ÏÍ¼ºÍ¶¥µãµÄºÏ·¨ĞÔ
+	if(v < 0 || v >= graph->vexnum)return ERROR;	//åˆ¤æ–­å›¾å’Œé¡¶ç‚¹çš„åˆæ³•æ€§
 	for(i=0;i<graph->vexnum;i++)
 		if(graph->arcs[v][i] != MAXINT)
-			graph->arcnum--;						//¼õÈ¥ÒÔvÎªÎ²µÄ»¡
-	if(graph->kind == DG || graph->kind == DN){		//ÈôgraphÊÇÓĞÏòÍ¼
-		for(i=0;i<graph->vexnum;i++)				//»¹ĞèÒª¼õÈ¥ÒÔvÎªÍ·µÄ»¡
+			graph->arcnum--;						//å‡å»ä»¥vä¸ºå°¾çš„å¼§
+	if(graph->kind == DG || graph->kind == DN){		//è‹¥graphæ˜¯æœ‰å‘å›¾
+		for(i=0;i<graph->vexnum;i++)				//è¿˜éœ€è¦å‡å»ä»¥vä¸ºå¤´çš„å¼§
 			if(graph->arcs[i][v] != MAXINT)
 				graph->arcnum--;
 	}
-	for(i=v;i<graph->vexnum;i++){					//½«vÒÔÏÂµÄĞĞÏòÉÏÒÆ¶¯Ò»ĞĞ
+	for(i=v;i<graph->vexnum;i++){					//å°†vä»¥ä¸‹çš„è¡Œå‘ä¸Šç§»åŠ¨ä¸€è¡Œ
 		for(j=0;j<graph->vexnum;j++){
 			graph->arcs[i][j]=graph->arcs[i+1][j];
 		}
 	}
-	for(i=0;i<graph->vexnum-1;i++){					//½«vÒÔÓÒµÄÁĞÏò×óÒÆ¶¯Ò»ÁĞ
+	for(i=0;i<graph->vexnum-1;i++){					//å°†vä»¥å³çš„åˆ—å‘å·¦ç§»åŠ¨ä¸€åˆ—
 		for(j=v;j<graph->vexnum;j++){
 			graph->arcs[i][j]=graph->arcs[i][j+1];
 		}
@@ -541,10 +541,10 @@ Status CreateDG(MGraph *graph){
 	int start;
 	int end;
 	graph->kind=DG;
-	printf("ÇëÊäÈë¶¥µãÊı£º");
+	printf("è¯·è¾“å…¥é¡¶ç‚¹æ•°ï¼š");
 	scanf("%d",&vexnum);
 	if(vexnum>MAXVEX || vexnum<1){
-		printf("¶¥µãÊı²»ºÏ·¨£¡\n");
+		printf("é¡¶ç‚¹æ•°ä¸åˆæ³•ï¼\n");
 		return ERROR;
 	}
 	graph->vexnum=vexnum;
@@ -553,18 +553,18 @@ Status CreateDG(MGraph *graph){
 			graph->arcs[i][j]=MAXINT;
 		}
 	}
-	printf("ÇëÊäÈë±ßµÄÊ¼µãºÍÖÕµã£¬ÊäÈë-1½áÊø:\n");
+	printf("è¯·è¾“å…¥è¾¹çš„å§‹ç‚¹å’Œç»ˆç‚¹ï¼Œè¾“å…¥-1ç»“æŸ:\n");
 	arcnum=0;
 	while(1){
 		scanf("%d",&start);
 		if(start == -1)break;
 		scanf("%d",&end);
 		if(start<0 || start>=vexnum || end<0 || end>=vexnum){
-			printf("±ß²»ºÏ·¨£¡\n");
+			printf("è¾¹ä¸åˆæ³•ï¼\n");
 			return ERROR;
 		}
 		if(start == end){
-			printf("²»ÔÊĞí³öÏÖ»·£¡\n");
+			printf("ä¸å…è®¸å‡ºç°ç¯ï¼\n");
 			return ERROR;
 		}
 		arcnum++;
@@ -580,30 +580,30 @@ Status CreateUDG(MGraph *graph){
 	int start;
 	int end;
 	graph->kind=UDG;
-	printf("ÇëÊäÈë¶¥µãÊı£º");
+	printf("è¯·è¾“å…¥é¡¶ç‚¹æ•°ï¼š");
 	scanf("%d",&vexnum);
 	if(vexnum>MAXVEX || vexnum<1){
-		printf("¶¥µãÊı²»ºÏ·¨£¡\n");
+		printf("é¡¶ç‚¹æ•°ä¸åˆæ³•ï¼\n");
 		return ERROR;
 	}
 	graph->vexnum=vexnum;
-	for(i=0;i<vexnum;i++){				//³õÊ¼»¯ËùÓĞ±ßÎªMAXINT
+	for(i=0;i<vexnum;i++){				//åˆå§‹åŒ–æ‰€æœ‰è¾¹ä¸ºMAXINT
 		for(j=0;j<vexnum;j++){
 			graph->arcs[i][j]=MAXINT;
 		}
 	}
-	printf("ÇëÊäÈë±ßµÄÊ¼µãºÍÖÕµã£¬ÊäÈë-1½áÊø:\n");
+	printf("è¯·è¾“å…¥è¾¹çš„å§‹ç‚¹å’Œç»ˆç‚¹ï¼Œè¾“å…¥-1ç»“æŸ:\n");
 	arcnum=0;
 	while(1){
 		scanf("%d",&start);
 		if(start == -1)break;
 		scanf("%d",&end);
 		if(start<0 || start>=vexnum || end<0 || end>=vexnum){
-			printf("±ß²»ºÏ·¨£¡\n");
+			printf("è¾¹ä¸åˆæ³•ï¼\n");
 			return ERROR;
 		}
 		if(start == end){
-			printf("²»ÔÊĞí³öÏÖ»·£¡\n");
+			printf("ä¸å…è®¸å‡ºç°ç¯ï¼\n");
 			return ERROR;
 		}
 		arcnum++;
@@ -620,35 +620,35 @@ Status CreateDN(MGraph *graph){
 	int end;
 	int adj;
 	graph->kind=DN;
-	printf("ÇëÊäÈë¶¥µãÊı£º");
+	printf("è¯·è¾“å…¥é¡¶ç‚¹æ•°ï¼š");
 	scanf("%d",&vexnum);
-	if(vexnum>MAXVEX || vexnum<1){			//ÅĞ¶Ï¶¥µãÊıÁ¿ÊÇ·ñºÏ·¨
-		printf("¶¥µãÊı²»ºÏ·¨£¡\n");
+	if(vexnum>MAXVEX || vexnum<1){			//åˆ¤æ–­é¡¶ç‚¹æ•°é‡æ˜¯å¦åˆæ³•
+		printf("é¡¶ç‚¹æ•°ä¸åˆæ³•ï¼\n");
 		return ERROR;
 	}
 	graph->vexnum=vexnum;
-	for(i=0;i<vexnum;i++){					//³õÊ¼»¯ËùÓĞ±ßÎªMAXINT
+	for(i=0;i<vexnum;i++){					//åˆå§‹åŒ–æ‰€æœ‰è¾¹ä¸ºMAXINT
 		for(j=0;j<vexnum;j++){
 			graph->arcs[i][j]=MAXINT;
 		}
 	}
-	printf("ÇëÊäÈë±ßµÄÊ¼µã¡¢ÖÕµãºÍ±ßµÄÈ¨£¬ÊäÈë-1½áÊø:\n");
+	printf("è¯·è¾“å…¥è¾¹çš„å§‹ç‚¹ã€ç»ˆç‚¹å’Œè¾¹çš„æƒï¼Œè¾“å…¥-1ç»“æŸ:\n");
 	arcnum=0;
 	while(1){
 		scanf("%d",&start);
 		if(start == -1)break;
-		scanf("%d",&end);					//ÅĞ¶ÏÆğµãºÍÖÕµãµÄºÏ·¨ĞÔ
+		scanf("%d",&end);					//åˆ¤æ–­èµ·ç‚¹å’Œç»ˆç‚¹çš„åˆæ³•æ€§
 		if(start<0 || start>=vexnum || end<0 || end>=vexnum){
-			printf("±ß²»ºÏ·¨£¡\n");
+			printf("è¾¹ä¸åˆæ³•ï¼\n");
 			return ERROR;
 		}
-		if(start == end){					//¹æ¶¨ËùÓĞÍ¼¾ù²»ÄÜ´æÔÚ»·
-			printf("²»ÔÊĞí³öÏÖ»·£¡\n");
+		if(start == end){					//è§„å®šæ‰€æœ‰å›¾å‡ä¸èƒ½å­˜åœ¨ç¯
+			printf("ä¸å…è®¸å‡ºç°ç¯ï¼\n");
 			return ERROR;
 		}
 		scanf("%d",&adj);
-		if(adj<=0){							//ÅĞ¶ÏÈ¨µÄºÏ·¨ĞÔ
-			printf("±ßÈ¨²»ºÏ·¨£¡\n");
+		if(adj<=0){							//åˆ¤æ–­æƒçš„åˆæ³•æ€§
+			printf("è¾¹æƒä¸åˆæ³•ï¼\n");
 			return ERROR;
 		}
 		arcnum++;
@@ -665,35 +665,35 @@ Status CreateUDN(MGraph *graph){
 	int end;
 	int adj;
 	graph->kind=UDN;
-	printf("ÇëÊäÈë¶¥µãÊı£º");
+	printf("è¯·è¾“å…¥é¡¶ç‚¹æ•°ï¼š");
 	scanf("%d",&vexnum);
-	if(vexnum>MAXVEX || vexnum<1){			//ÅĞ¶Ï¶¥µãµÄÊıÄ¿ÊÇ·ñºÏ·¨
-		printf("¶¥µãÊı²»ºÏ·¨£¡\n");
+	if(vexnum>MAXVEX || vexnum<1){			//åˆ¤æ–­é¡¶ç‚¹çš„æ•°ç›®æ˜¯å¦åˆæ³•
+		printf("é¡¶ç‚¹æ•°ä¸åˆæ³•ï¼\n");
 		return ERROR;
 	}
 	graph->vexnum=vexnum;
-	for(i=0;i<vexnum;i++){					//³õÊ¼»¯ËùÓĞ±ßÎªMAXINT
+	for(i=0;i<vexnum;i++){					//åˆå§‹åŒ–æ‰€æœ‰è¾¹ä¸ºMAXINT
 		for(j=0;j<vexnum;j++){
 			graph->arcs[i][j]=MAXINT;
 		}
 	}
-	printf("ÇëÊäÈë±ßµÄÊ¼µã¡¢ÖÕµãºÍ±ßµÄÈ¨£¬ÊäÈë-1½áÊø:\n");
+	printf("è¯·è¾“å…¥è¾¹çš„å§‹ç‚¹ã€ç»ˆç‚¹å’Œè¾¹çš„æƒï¼Œè¾“å…¥-1ç»“æŸ:\n");
 	arcnum=0;
 	while(1){
 		scanf("%d",&start);
 		if(start == -1)break;
-		scanf("%d",&end);					//ÅĞ¶ÏÆğµãºÍÖÕµãµÄºÏ·¨ĞÔ
+		scanf("%d",&end);					//åˆ¤æ–­èµ·ç‚¹å’Œç»ˆç‚¹çš„åˆæ³•æ€§
 		if(start<0 || start>=vexnum || end<0 || end>=vexnum){
-			printf("±ß²»ºÏ·¨£¡\n");
+			printf("è¾¹ä¸åˆæ³•ï¼\n");
 			return ERROR;
 		}
-		if(start == end){					//¹æ¶¨ËùÓĞÍ¼¾ù²»ÄÜ´æÔÚ»·
-			printf("²»ÔÊĞí³öÏÖ»·£¡\n");
+		if(start == end){					//è§„å®šæ‰€æœ‰å›¾å‡ä¸èƒ½å­˜åœ¨ç¯
+			printf("ä¸å…è®¸å‡ºç°ç¯ï¼\n");
 			return ERROR;
 		}
 		scanf("%d",&adj);
-		if(adj<=0){							//ÅĞ¶ÏÈ¨µÄºÏ·¨ĞÔ
-			printf("±ßÈ¨²»ºÏ·¨£¡\n");
+		if(adj<=0){							//åˆ¤æ–­æƒçš„åˆæ³•æ€§
+			printf("è¾¹æƒä¸åˆæ³•ï¼\n");
 			return ERROR;
 		}
 		arcnum++;
@@ -704,15 +704,15 @@ Status CreateUDN(MGraph *graph){
 }
 Status CreateGraph(MGraph *graph){
 	int kind;
-	printf("1.ÓĞÏòÍ¼\n2.ÓĞÏòÍø\n3.ÎŞÏòÍ¼\n4.ÎŞÏòÍø\n");
-	printf("ÇëÊäÈëÍ¼µÄÀàĞÍ£º");
+	printf("1.æœ‰å‘å›¾\n2.æœ‰å‘ç½‘\n3.æ— å‘å›¾\n4.æ— å‘ç½‘\n");
+	printf("è¯·è¾“å…¥å›¾çš„ç±»å‹ï¼š");
 	scanf("%d",&kind);
 	switch(kind){
 		case 1:if(CreateDG(graph) == ERROR)return ERROR;break;
 		case 2:if(CreateDN(graph) == ERROR)return ERROR;break;
 		case 3:if(CreateUDG(graph) == ERROR)return ERROR;break;
 		case 4:if(CreateUDN(graph) == ERROR)return ERROR;break;
-		default:printf("ÇëÊäÈëÕıÈ·µÄÍ¼ÀàĞÍ±àºÅ£¡\n");
+		default:printf("è¯·è¾“å…¥æ­£ç¡®çš„å›¾ç±»å‹ç¼–å·ï¼\n");
 				return ERROR;
 	}
 	return OK;
@@ -725,7 +725,7 @@ int main(){
 	CreateGraph(&graph);
 	for(i=0;i<graph.vexnum;i++){
 		for(j=0;j<graph.vexnum;j++){
-			if(graph.arcs[i][j] == MAXINT)printf("¡Ş");
+			if(graph.arcs[i][j] == MAXINT)printf("âˆ");
 			else printf("%2d",graph.arcs[i][j]);
 		}
 		printf("\n");
@@ -733,7 +733,7 @@ int main(){
 	if(FloShortPath(graph,path,dist) == ERROR)printf("error\n");
 	for(i=0;i<graph.vexnum;i++){
 		for(j=0;j<graph.vexnum;j++){
-			if(dist[i][j] == MAXINT)printf(" ¡Ş");
+			if(dist[i][j] == MAXINT)printf(" âˆ");
 			else printf("%3d",dist[i][j]);
 		}
 		printf("\n");
