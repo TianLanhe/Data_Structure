@@ -55,10 +55,10 @@ Status DijShortPath(ALGraph graph,int v,int path[][MAXVEX+2],int *dist){
 			path[i][1]=v;
 		}
 	}
-	path[index][0]=1;						//pathµÄ´æ´¢½á¹¹Îªpath[0]=length±íÊ¾µãµÄ¸öÊı
-	path[index][1]=v;						//½ÓÏÂÀ´length¸öÔªËØÎª¶¥µã£¬µÚlength+1¸öÔªËØ
-	path[index][2]=0;						//Ôİ´æ¾àÀëdist£¬Êı×édistÓÃ-1±íÊ¾ÒÑ²¢ÈëSÖĞ£¬ËÑË÷½áÊøºóÔÙ¸³Öµ¸ødist
-	dist[index]=-1;								//-1±íÊ¾¸ÃµãÒÑ²¢ÈëSÖĞ
+	path[index][0]=1;						//pathçš„å­˜å‚¨ç»“æ„ä¸ºpath[0]=lengthè¡¨ç¤ºç‚¹çš„ä¸ªæ•°
+	path[index][1]=v;						//æ¥ä¸‹æ¥lengthä¸ªå…ƒç´ ä¸ºé¡¶ç‚¹ï¼Œç¬¬length+1ä¸ªå…ƒç´ 
+	path[index][2]=0;						//æš‚å­˜è·ç¦»distï¼Œæ•°ç»„distç”¨-1è¡¨ç¤ºå·²å¹¶å…¥Sä¸­ï¼Œæœç´¢ç»“æŸåå†èµ‹å€¼ç»™dist
+	dist[index]=-1;								//-1è¡¨ç¤ºè¯¥ç‚¹å·²å¹¶å…¥Sä¸­
 	for(i=1;i<graph.vexnum;i++){
 		mindist=MAXINT;
 		for(j=0;j<graph.vexnum;j++){
@@ -355,20 +355,20 @@ Status BFSTraverse(ALGraph *graph,Status (*traverse)(VNode)){
 	int nextvex;
 	if(graph == NULL || graph->vexnum == 0)return ERROR;
 	for(i=0;i<graph->vexnum;i++)visit[i]=false;
-	top=buttom=0;				//³õÊ¼»¯¶ÓÁĞ£¬¶ÓÊ×µÈÓÚ¶ÓÎ²±íÊ¾¶ÓÁĞÎª¿Õ
-	if(traverse(graph->vertices[0]) == ERROR)return ERROR;	//·ÃÎÊ¶¥µã
+	top=buttom=0;				//åˆå§‹åŒ–é˜Ÿåˆ—ï¼Œé˜Ÿé¦–ç­‰äºé˜Ÿå°¾è¡¨ç¤ºé˜Ÿåˆ—ä¸ºç©º
+	if(traverse(graph->vertices[0]) == ERROR)return ERROR;	//è®¿é—®é¡¶ç‚¹
 	visit[0]=true;
 	queue[buttom]=graph->vertices[0].vexno;	
-	buttom++;					//ÕâÁ½¾äÄ£ÄâÈë¶ÓÁĞ£¬½«¶¥µãĞòºÅÈë¶ÓÁĞ£¬È»ºó¶ÓÎ²ÏòºóÒ»¸ö	
-	while(top != buttom){		//µ±¶ÓÁĞ²»¿ÕÊ±
+	buttom++;					//è¿™ä¸¤å¥æ¨¡æ‹Ÿå…¥é˜Ÿåˆ—ï¼Œå°†é¡¶ç‚¹åºå·å…¥é˜Ÿåˆ—ï¼Œç„¶åé˜Ÿå°¾å‘åä¸€ä¸ª	
+	while(top != buttom){		//å½“é˜Ÿåˆ—ä¸ç©ºæ—¶
 		vertex=queue[top];
-		top++;					//ÕâÁ½¾äÄ£Äâ³ö¶ÓÁĞ£¬½«¶¥µãĞòºÅ´Ó¶ÓÁĞÖĞµ¯³ö£¬²¢Ê¹¶ÓÊ×ÏòºóÒ»¸ö
+		top++;					//è¿™ä¸¤å¥æ¨¡æ‹Ÿå‡ºé˜Ÿåˆ—ï¼Œå°†é¡¶ç‚¹åºå·ä»é˜Ÿåˆ—ä¸­å¼¹å‡ºï¼Œå¹¶ä½¿é˜Ÿé¦–å‘åä¸€ä¸ª
 		for(nextvex=FirstAdjVex(*graph,vertex);nextvex>=0;nextvex=NextAdjVex(*graph,vertex,nextvex)){
 			if((index=VexNo(*graph,nextvex)) == ERROR)return ERROR;
-			if(visit[index] == false){		//Èç¹û¶¥µã»¹Î´·ÃÎÊ¹ı
+			if(visit[index] == false){		//å¦‚æœé¡¶ç‚¹è¿˜æœªè®¿é—®è¿‡
 				if(traverse(graph->vertices[index]) == ERROR)return ERROR;
 				visit[index]=true;
-				queue[buttom]=nextvex;		//Ôò·ÃÎÊ²¢Èë¶ÓÁĞ
+				queue[buttom]=nextvex;		//åˆ™è®¿é—®å¹¶å…¥é˜Ÿåˆ—
 				buttom++;
 			}
 		}
@@ -381,7 +381,7 @@ Status Print(VNode vnode){
 }
 Status InsertVex(ALGraph *graph,int v){
 	if(graph == NULL || graph->vexnum >= MAXVEX)return ERROR;
-	if(VexNo(*graph,v) != -1)return ERROR;			//ÅĞ¶Ï²ÎÊıºÏ·¨ĞÔ
+	if(VexNo(*graph,v) != -1)return ERROR;			//åˆ¤æ–­å‚æ•°åˆæ³•æ€§
 	graph->vertices[graph->vexnum].firstarc=NULL;
 	graph->vertices[graph->vexnum].vexno=v;
 	graph->vexnum++;
@@ -392,17 +392,17 @@ Status DeleteVex(ALGraph *graph,int v){
 	ArcNode *node,*temp;
 	int i;
 	if(graph == NULL || graph->vexnum <= 0)return ERROR;
-	if((index=VexNo(*graph,v)) == -1)return ERROR;			//ÅĞ¶Ï²ÎÊıºÏ·¨ĞÔ
-	for(i=0;i<graph->vexnum;i++){					//ÏÈÉ¾³ıÆäËû¶¥µãµ½vµÄ±ß
+	if((index=VexNo(*graph,v)) == -1)return ERROR;			//åˆ¤æ–­å‚æ•°åˆæ³•æ€§
+	for(i=0;i<graph->vexnum;i++){					//å…ˆåˆ é™¤å…¶ä»–é¡¶ç‚¹åˆ°vçš„è¾¹
 		if(DeleteArc(graph,graph->vertices[i].vexno,v) == ERROR)return ERROR;
 	}
-	node=graph->vertices[index].firstarc;			//ÔÙÉ¾³ıvµ½ÆäËû¶¥µãµÄ±ß
-	while(node){									//Èç¹ûÊÇÎŞÏòÍ¼£¬µÚÒ»²½ÒÑ¾­½«vµ½ÆäËû¶¥µãµÄ±ßÉ¾³ıÁË
+	node=graph->vertices[index].firstarc;			//å†åˆ é™¤våˆ°å…¶ä»–é¡¶ç‚¹çš„è¾¹
+	while(node){									//å¦‚æœæ˜¯æ— å‘å›¾ï¼Œç¬¬ä¸€æ­¥å·²ç»å°†våˆ°å…¶ä»–é¡¶ç‚¹çš„è¾¹åˆ é™¤äº†
 		temp=node;
 		node=node->nextarc;
 		free(temp);
 	}
-	for(;index<graph->vexnum-1;index++){			//½«Êı×éÖĞ¶¥µãvµÄÏÂ±êindexÒÔÏÂµÄ¶¥µãÍíÉÏÒÆÒ»ĞĞ
+	for(;index<graph->vexnum-1;index++){			//å°†æ•°ç»„ä¸­é¡¶ç‚¹vçš„ä¸‹æ ‡indexä»¥ä¸‹çš„é¡¶ç‚¹æ™šä¸Šç§»ä¸€è¡Œ
 		graph->vertices[index].vexno=graph->vertices[index+1].vexno;
 		graph->vertices[index].firstarc=graph->vertices[index+1].firstarc;
 	}
@@ -411,13 +411,13 @@ Status DeleteVex(ALGraph *graph,int v){
 }
 Status DeleteArc(ALGraph *graph,int v,int w){
 	int index;
-	int index2;												//ÈıÖÖ·µ»ØÀàĞÍ
-	ArcNode *node,*pre;										//0:³É¹¦,-1:Ê§°Ü,-2:¿ÉºöÂÔ
+	int index2;												//ä¸‰ç§è¿”å›ç±»å‹
+	ArcNode *node,*pre;										//0:æˆåŠŸ,-1:å¤±è´¥,-2:å¯å¿½ç•¥
 	if(graph == NULL || graph->vexnum == 0)return ERROR;
 	if((index=VexNo(*graph,v)) == -1)return ERROR;
-	if((index2=VexNo(*graph,w)) == -1)return ERROR;			//ÅĞ¶Ï²ÎÊıºÏ·¨ĞÔ
+	if((index2=VexNo(*graph,w)) == -1)return ERROR;			//åˆ¤æ–­å‚æ•°åˆæ³•æ€§
 	node=graph->vertices[index].firstarc;
-	pre=graph->vertices[index].firstarc;					//ÓëÉ¾³ıÎŞĞéÍ·½áµãµÄÁ´±í²Ù×÷ÏàÍ¬
+	pre=graph->vertices[index].firstarc;					//ä¸åˆ é™¤æ— è™šå¤´ç»“ç‚¹çš„é“¾è¡¨æ“ä½œç›¸åŒ
 	while(node){
 		if(node->adjvex == w){
 			if(node == graph->vertices[index].firstarc){
@@ -427,7 +427,7 @@ Status DeleteArc(ALGraph *graph,int v,int w){
 				pre->nextarc=node->nextarc;
 				free(node);
 			}
-			if(graph->kind == UDG || graph->kind == UDN){	//ÈôÊÇÎŞÏòÍ¼(Íø)£¬»¹ÒªÉ¾³ı¶Ô³Æ±ß
+			if(graph->kind == UDG || graph->kind == UDN){	//è‹¥æ˜¯æ— å‘å›¾(ç½‘)ï¼Œè¿˜è¦åˆ é™¤å¯¹ç§°è¾¹
 				node=graph->vertices[index2].firstarc;
 				pre=graph->vertices[index2].firstarc;
 				while(node){
@@ -499,15 +499,15 @@ Status DestroyGraph(ALGraph *graph){
 }
 Status CreateGraph(ALGraph *graph){
 	int kind;
-	printf("1.ÓĞÏòÍ¼\n2.ÓĞÏòÍø\n3.ÎŞÏòÍ¼\n4.ÎŞÏòÍø\n");
-	printf("ÇëÊäÈëÍ¼µÄÀàĞÍ£º");
+	printf("1.æœ‰å‘å›¾\n2.æœ‰å‘ç½‘\n3.æ— å‘å›¾\n4.æ— å‘ç½‘\n");
+	printf("è¯·è¾“å…¥å›¾çš„ç±»å‹ï¼š");
 	scanf("%d",&kind);
 	switch(kind){
 		case 1:if(CreateDG(graph) == ERROR)return ERROR;break;
 		case 2:if(CreateDN(graph) == ERROR)return ERROR;break;
 		case 3:if(CreateUDG(graph) == ERROR)return ERROR;break;
 		case 4:if(CreateUDN(graph) == ERROR)return ERROR;break;
-		default:printf("ÇëÊäÈëÕıÈ·µÄÍ¼ÀàĞÍ±àºÅ£¡\n");
+		default:printf("è¯·è¾“å…¥æ­£ç¡®çš„å›¾ç±»å‹ç¼–å·ï¼\n");
 				return ERROR;
 	}
 	return OK;
@@ -525,18 +525,18 @@ Status InsertArc(ALGraph *graph,int v,int w,int adj){
 	if(graph == NULL || graph->vexnum == 0)return ERROR;
 	start=VexNo(*graph,v);
 	end=VexNo(*graph,w);
-	if(end == -1 || start == -1 || start == end)return ERROR;	//ÅĞ¶Ï²ÎÊıµÄºÏ·¨ĞÔ
-	for(temp=graph->vertices[start].firstarc;temp;temp=temp->nextarc)	//Èç¹ûÒÑ¾­ÓĞ<v,w>»¡ÁË£¬²»Ìí¼Ó£¬·µ»Ø-2
-		if(temp->adjvex == w)return -2;							//ÈıÖÖ·µ»ØÀàĞÍ
-	arcnode=(ArcNode*)malloc(sizeof(ArcNode));					//0:³É¹¦,-1:Ê§°Ü,-2:¿ÉºöÂÔ
+	if(end == -1 || start == -1 || start == end)return ERROR;	//åˆ¤æ–­å‚æ•°çš„åˆæ³•æ€§
+	for(temp=graph->vertices[start].firstarc;temp;temp=temp->nextarc)	//å¦‚æœå·²ç»æœ‰<v,w>å¼§äº†ï¼Œä¸æ·»åŠ ï¼Œè¿”å›-2
+		if(temp->adjvex == w)return -2;							//ä¸‰ç§è¿”å›ç±»å‹
+	arcnode=(ArcNode*)malloc(sizeof(ArcNode));					//0:æˆåŠŸ,-1:å¤±è´¥,-2:å¯å¿½ç•¥
 	if(!arcnode)return ERROR;
 	arcnode->adjvex=w;
 	if(graph->kind == DG || graph->kind == UDG)
 		arcnode->weight=1;
 	else arcnode->weight=adj;
-	arcnode->nextarc=graph->vertices[start].firstarc;			//²åÈëµÄÎ»ÖÃÊÇÁ´±íÊ×²¿£¬¼´²åÈëºó³ÉÎªvµÄµÚÒ»ÌõÁÚ±ß£¬¶ø²»ÊÇ×îºóÒ»Ìõ
+	arcnode->nextarc=graph->vertices[start].firstarc;			//æ’å…¥çš„ä½ç½®æ˜¯é“¾è¡¨é¦–éƒ¨ï¼Œå³æ’å…¥åæˆä¸ºvçš„ç¬¬ä¸€æ¡é‚»è¾¹ï¼Œè€Œä¸æ˜¯æœ€åä¸€æ¡
 	graph->vertices[start].firstarc=arcnode;
-	if(graph->kind == UDG || graph->kind == UDN){				//Èç¹ûÊÇÎŞÏòÍ¼(Íø)£¬»¹Òª²åÈë¶Ô³Æ±ß
+	if(graph->kind == UDG || graph->kind == UDN){				//å¦‚æœæ˜¯æ— å‘å›¾(ç½‘)ï¼Œè¿˜è¦æ’å…¥å¯¹ç§°è¾¹
 		temp=(ArcNode*)malloc(sizeof(ArcNode));
 		if(!temp)return ERROR;
 		temp->adjvex=v;
@@ -553,14 +553,14 @@ Status CreateDG(ALGraph *graph){
 	int start;
 	int end;
 	graph->kind=DG;
-	printf("ÇëÊäÈë¶¥µãÊı£º");
+	printf("è¯·è¾“å…¥é¡¶ç‚¹æ•°ï¼š");
 	scanf("%d",&vexnum);
 	if(vexnum>MAXVEX || vexnum<1){
-		printf("¶¥µãÊı²»ºÏ·¨£¡\n");
+		printf("é¡¶ç‚¹æ•°ä¸åˆæ³•ï¼\n");
 		return ERROR;
 	}
 	graph->vexnum=vexnum;
-	printf("ÇëÒÀ´ÎÊäÈë¶¥µãµÄ±àºÅ(°´Ä¬ÈÏ±àºÅÊäÈë-1)£º");
+	printf("è¯·ä¾æ¬¡è¾“å…¥é¡¶ç‚¹çš„ç¼–å·(æŒ‰é»˜è®¤ç¼–å·è¾“å…¥-1)ï¼š");
 	scanf("%d",&vexnum);
 	if(vexnum == -1){
 		for(i=0;i<graph->vexnum;i++){
@@ -572,7 +572,7 @@ Status CreateDG(ALGraph *graph){
 		count=0;
 		while(count < graph->vexnum){
 			if(vexnum <= -1){
-				printf("ÇëÊäÈë´óÓÚ-1µÄÕûÊı£¡\n");
+				printf("è¯·è¾“å…¥å¤§äº-1çš„æ•´æ•°ï¼\n");
 			}else{
 				graph->vertices[count].vexno=vexnum;
 				graph->vertices[count].firstarc=NULL;
@@ -581,25 +581,25 @@ Status CreateDG(ALGraph *graph){
 			if(count < graph->vexnum)scanf("%d",&vexnum);
 		}
 	}else{
-		printf("ÇëÊäÈë´óÓÚµÈÓÚ-1µÄÕûÊı£¡\n");
+		printf("è¯·è¾“å…¥å¤§äºç­‰äº-1çš„æ•´æ•°ï¼\n");
 		return ERROR;
 	}
-	printf("ÇëÊäÈë±ßµÄÊ¼µãºÍÖÕµã£¬ÊäÈë-1½áÊø:\n");
+	printf("è¯·è¾“å…¥è¾¹çš„å§‹ç‚¹å’Œç»ˆç‚¹ï¼Œè¾“å…¥-1ç»“æŸ:\n");
 	arcnum=0;
 	while(1){
 		scanf("%d",&start);
 		if(start == -1)break;
 		else if(VexNo(*graph,start) == -1){
-			printf("²»´æÔÚ±àºÅÎª%dµÄ¶¥µã£¡\n",start);
+			printf("ä¸å­˜åœ¨ç¼–å·ä¸º%dçš„é¡¶ç‚¹ï¼\n",start);
 			return ERROR;
 		}
 		scanf("%d",&end);
 		if(VexNo(*graph,end) == -1){
-			printf("²»´æÔÚ±àºÅÎª%dµÄ¶¥µã£¡\n",end);
+			printf("ä¸å­˜åœ¨ç¼–å·ä¸º%dçš„é¡¶ç‚¹ï¼\n",end);
 			return ERROR;
 		}
 		if(start == end){
-			printf("²»ÔÊĞí³öÏÖ»·£¡\n");
+			printf("ä¸å…è®¸å‡ºç°ç¯ï¼\n");
 			return ERROR;
 		}
 		arcnum++;
@@ -616,14 +616,14 @@ Status CreateDN(ALGraph *graph){
 	int end;
 	int adj;
 	graph->kind=DN;
-	printf("ÇëÊäÈë¶¥µãÊı£º");
+	printf("è¯·è¾“å…¥é¡¶ç‚¹æ•°ï¼š");
 	scanf("%d",&vexnum);
 	if(vexnum>MAXVEX || vexnum<1){
-		printf("¶¥µãÊı²»ºÏ·¨£¡\n");
+		printf("é¡¶ç‚¹æ•°ä¸åˆæ³•ï¼\n");
 		return ERROR;
 	}
 	graph->vexnum=vexnum;
-	printf("ÇëÒÀ´ÎÊäÈë¶¥µãµÄ±àºÅ(°´Ä¬ÈÏ±àºÅÊäÈë-1)£º");
+	printf("è¯·ä¾æ¬¡è¾“å…¥é¡¶ç‚¹çš„ç¼–å·(æŒ‰é»˜è®¤ç¼–å·è¾“å…¥-1)ï¼š");
 	scanf("%d",&vexnum);
 	if(vexnum == -1){
 		for(i=0;i<graph->vexnum;i++){
@@ -635,7 +635,7 @@ Status CreateDN(ALGraph *graph){
 		count=0;
 		while(count < graph->vexnum){
 			if(vexnum <= -1){
-				printf("ÇëÊäÈë´óÓÚ-1µÄÕûÊı£¡\n");
+				printf("è¯·è¾“å…¥å¤§äº-1çš„æ•´æ•°ï¼\n");
 			}else{
 				graph->vertices[count].vexno=vexnum;
 				graph->vertices[count].firstarc=NULL;
@@ -644,30 +644,30 @@ Status CreateDN(ALGraph *graph){
 			if(count < graph->vexnum)scanf("%d",&vexnum);
 		}
 	}else{
-		printf("ÇëÊäÈë´óÓÚµÈÓÚ-1µÄÕûÊı£¡\n");
+		printf("è¯·è¾“å…¥å¤§äºç­‰äº-1çš„æ•´æ•°ï¼\n");
 		return ERROR;
 	}
-	printf("ÇëÊäÈë±ßµÄÊ¼µã¡¢ÖÕµãºÍ±ßµÄÈ¨£¬ÊäÈë-1½áÊø:\n");
+	printf("è¯·è¾“å…¥è¾¹çš„å§‹ç‚¹ã€ç»ˆç‚¹å’Œè¾¹çš„æƒï¼Œè¾“å…¥-1ç»“æŸ:\n");
 	arcnum=0;
 	while(1){
 		scanf("%d",&start);
 		if(start == -1)break;
 		else if(VexNo(*graph,start) == -1){
-			printf("²»´æÔÚ±àºÅÎª%dµÄ¶¥µã£¡\n",start);
+			printf("ä¸å­˜åœ¨ç¼–å·ä¸º%dçš„é¡¶ç‚¹ï¼\n",start);
 			return ERROR;
 		}
 		scanf("%d",&end);
 		if(VexNo(*graph,end) == -1){
-			printf("²»´æÔÚ±àºÅÎª%dµÄ¶¥µã£¡\n",end);
+			printf("ä¸å­˜åœ¨ç¼–å·ä¸º%dçš„é¡¶ç‚¹ï¼\n",end);
 			return ERROR;
 		}
 		if(start == end){
-			printf("²»ÔÊĞí³öÏÖ»·£¡\n");
+			printf("ä¸å…è®¸å‡ºç°ç¯ï¼\n");
 			return ERROR;
 		}
 		scanf("%d",&adj);
 		if(adj<=0){
-			printf("±ßÈ¨²»ºÏ·¨£¡\n");
+			printf("è¾¹æƒä¸åˆæ³•ï¼\n");
 			return ERROR;
 		}
 		arcnum++;
@@ -683,14 +683,14 @@ Status CreateUDG(ALGraph *graph){
 	int start;
 	int end;
 	graph->kind=UDG;
-	printf("ÇëÊäÈë¶¥µãÊı£º");
+	printf("è¯·è¾“å…¥é¡¶ç‚¹æ•°ï¼š");
 	scanf("%d",&vexnum);
 	if(vexnum>MAXVEX || vexnum<1){
-		printf("¶¥µãÊı²»ºÏ·¨£¡\n");
+		printf("é¡¶ç‚¹æ•°ä¸åˆæ³•ï¼\n");
 		return ERROR;
 	}
 	graph->vexnum=vexnum;
-	printf("ÇëÒÀ´ÎÊäÈë¶¥µãµÄ±àºÅ(°´Ä¬ÈÏ±àºÅÊäÈë-1)£º");
+	printf("è¯·ä¾æ¬¡è¾“å…¥é¡¶ç‚¹çš„ç¼–å·(æŒ‰é»˜è®¤ç¼–å·è¾“å…¥-1)ï¼š");
 	scanf("%d",&vexnum);
 	if(vexnum == -1){
 		for(i=0;i<graph->vexnum;i++){
@@ -702,7 +702,7 @@ Status CreateUDG(ALGraph *graph){
 		count=0;
 		while(count < graph->vexnum){
 			if(vexnum <= -1){
-				printf("ÇëÊäÈë´óÓÚ-1µÄÕûÊı£¡\n");
+				printf("è¯·è¾“å…¥å¤§äº-1çš„æ•´æ•°ï¼\n");
 			}else{
 				graph->vertices[count].vexno=vexnum;
 				graph->vertices[count].firstarc=NULL;
@@ -711,25 +711,25 @@ Status CreateUDG(ALGraph *graph){
 			if(count < graph->vexnum)scanf("%d",&vexnum);
 		}
 	}else{
-		printf("ÇëÊäÈë´óÓÚµÈÓÚ-1µÄÕûÊı£¡\n");
+		printf("è¯·è¾“å…¥å¤§äºç­‰äº-1çš„æ•´æ•°ï¼\n");
 		return ERROR;
 	}
-	printf("ÇëÊäÈë±ßµÄÊ¼µãºÍÖÕµã£¬ÊäÈë-1½áÊø:\n");
+	printf("è¯·è¾“å…¥è¾¹çš„å§‹ç‚¹å’Œç»ˆç‚¹ï¼Œè¾“å…¥-1ç»“æŸ:\n");
 	arcnum=0;
 	while(1){
 		scanf("%d",&start);
 		if(start == -1)break;
 		else if(VexNo(*graph,start) == -1){
-			printf("²»´æÔÚ±àºÅÎª%dµÄ¶¥µã£¡\n",start);
+			printf("ä¸å­˜åœ¨ç¼–å·ä¸º%dçš„é¡¶ç‚¹ï¼\n",start);
 			return ERROR;
 		}
 		scanf("%d",&end);
 		if(VexNo(*graph,end) == -1){
-			printf("²»´æÔÚ±àºÅÎª%dµÄ¶¥µã£¡\n",end);
+			printf("ä¸å­˜åœ¨ç¼–å·ä¸º%dçš„é¡¶ç‚¹ï¼\n",end);
 			return ERROR;
 		}
 		if(start == end){
-			printf("²»ÔÊĞí³öÏÖ»·£¡\n");
+			printf("ä¸å…è®¸å‡ºç°ç¯ï¼\n");
 			return ERROR;
 		}
 		arcnum++;
@@ -746,14 +746,14 @@ Status CreateUDN(ALGraph *graph){
 	int end;
 	int adj;
 	graph->kind=UDN;
-	printf("ÇëÊäÈë¶¥µãÊı£º");
+	printf("è¯·è¾“å…¥é¡¶ç‚¹æ•°ï¼š");
 	scanf("%d",&vexnum);
-	if(vexnum>MAXVEX || vexnum<1){				//ÅĞ¶Ï¶¥µãÊıÊÇ·ñºÏ·¨
-		printf("¶¥µãÊı²»ºÏ·¨£¡\n");
+	if(vexnum>MAXVEX || vexnum<1){				//åˆ¤æ–­é¡¶ç‚¹æ•°æ˜¯å¦åˆæ³•
+		printf("é¡¶ç‚¹æ•°ä¸åˆæ³•ï¼\n");
 		return ERROR;
 	}
-	graph->vexnum=vexnum;							   //ÁÚ½Ó¾ØÕóÖĞÏÂ±ê¾ÍÊÇ¶¥µãµÄ±àºÅ
-	printf("ÇëÒÀ´ÎÊäÈë¶¥µãµÄ±àºÅ(°´Ä¬ÈÏ±àºÅÊäÈë-1)£º");//ÕâÀïÏÂ±êÓë±àºÅ·Ö¿ª£¬¶¥µã±àºÅ¿ÉÒÔÈÎÒâ£¬¸ü¼ÓºÏÀí
+	graph->vexnum=vexnum;							   //é‚»æ¥çŸ©é˜µä¸­ä¸‹æ ‡å°±æ˜¯é¡¶ç‚¹çš„ç¼–å·
+	printf("è¯·ä¾æ¬¡è¾“å…¥é¡¶ç‚¹çš„ç¼–å·(æŒ‰é»˜è®¤ç¼–å·è¾“å…¥-1)ï¼š");//è¿™é‡Œä¸‹æ ‡ä¸ç¼–å·åˆ†å¼€ï¼Œé¡¶ç‚¹ç¼–å·å¯ä»¥ä»»æ„ï¼Œæ›´åŠ åˆç†
 	scanf("%d",&vexnum);
 	if(vexnum == -1){
 		for(i=0;i<graph->vexnum;i++){
@@ -765,7 +765,7 @@ Status CreateUDN(ALGraph *graph){
 		count=0;
 		while(count < graph->vexnum){
 			if(vexnum <= -1){
-				printf("ÇëÊäÈë´óÓÚ-1µÄÕûÊı£¡\n");
+				printf("è¯·è¾“å…¥å¤§äº-1çš„æ•´æ•°ï¼\n");
 			}else{
 				graph->vertices[count].vexno=vexnum;
 				graph->vertices[count].firstarc=NULL;
@@ -774,30 +774,30 @@ Status CreateUDN(ALGraph *graph){
 			if(count < graph->vexnum)scanf("%d",&vexnum);
 		}
 	}else{
-		printf("ÇëÊäÈë´óÓÚµÈÓÚ-1µÄÕûÊı£¡\n");
+		printf("è¯·è¾“å…¥å¤§äºç­‰äº-1çš„æ•´æ•°ï¼\n");
 		return ERROR;
 	}
-	printf("ÇëÊäÈë±ßµÄÊ¼µã¡¢ÖÕµãºÍ±ßµÄÈ¨£¬ÊäÈë-1½áÊø:\n");
+	printf("è¯·è¾“å…¥è¾¹çš„å§‹ç‚¹ã€ç»ˆç‚¹å’Œè¾¹çš„æƒï¼Œè¾“å…¥-1ç»“æŸ:\n");
 	arcnum=0;
 	while(1){
 		scanf("%d",&start);
 		if(start == -1)break;
 		else if(VexNo(*graph,start) == -1){
-			printf("²»´æÔÚ±àºÅÎª%dµÄ¶¥µã£¡\n",start);
+			printf("ä¸å­˜åœ¨ç¼–å·ä¸º%dçš„é¡¶ç‚¹ï¼\n",start);
 			return ERROR;
 		}
 		scanf("%d",&end);
 		if(VexNo(*graph,end) == -1){
-			printf("²»´æÔÚ±àºÅÎª%dµÄ¶¥µã£¡\n",end);
+			printf("ä¸å­˜åœ¨ç¼–å·ä¸º%dçš„é¡¶ç‚¹ï¼\n",end);
 			return ERROR;
 		}
 		if(start == end){
-			printf("²»ÔÊĞí³öÏÖ»·£¡\n");
+			printf("ä¸å…è®¸å‡ºç°ç¯ï¼\n");
 			return ERROR;
 		}
 		scanf("%d",&adj);
 		if(adj<=0){
-			printf("±ßÈ¨²»ºÏ·¨£¡\n");
+			printf("è¾¹æƒä¸åˆæ³•ï¼\n");
 			return ERROR;
 		}
 		arcnum++;
@@ -806,3 +806,4 @@ Status CreateUDN(ALGraph *graph){
 	graph->arcnum=arcnum;
 	return OK;
 }
+
