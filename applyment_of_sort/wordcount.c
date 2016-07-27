@@ -32,8 +32,11 @@ int wordcount(FILE *fp,WordCount *wc){
 	int low,high,mid;
 	int index;
 	int i;
+	int total;
 	wc->wordnum=0;
+	total=0;
 	for(getword(fp,str);strcmp(str,"");getword(fp,str)){	//每读取一个单词
+		total++;
 		low=0;												//使用折半插入法
 		high=wc->wordnum-1;
 		while(low<=high){
@@ -54,7 +57,7 @@ int wordcount(FILE *fp,WordCount *wc){
 			wc->wordnum++;
 		}
 	}
-	return wc->wordnum;
+	return total;
 }
 void PrintWord(WordCount wc){
 	int i;
@@ -63,16 +66,19 @@ void PrintWord(WordCount wc){
 }
 int main(int argc,char *argv[]){
 	int i;
+	int total;
 	FILE *fp;
 	WordCount wc;
 	if(argc < 2){
-		printf("\n");
+		printf("Uage: program file1 file2 ...\n");
 		return 0;
 	}
 	for(i=1;i<argc;i++){
 		if((fp=fopen(argv[i],"r")) == NULL)return ERROR;
-		wordcount(fp,&wc);
+		total=wordcount(fp,&wc);
 		PrintWord(wc);
+		printf("单词个数：%d\n",wc.wordnum);
+		printf("单词总数：%d\n",total);
 	}
 	return 0;
 }
