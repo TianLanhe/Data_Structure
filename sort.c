@@ -67,6 +67,22 @@ void InsertSort(int a[],int n){
         }
     }
 }
+void BinInsertSort(int a[],int n){
+    int low,high,mid;
+    int i,j,temp;
+    for(i=1;i<n;i++){
+        low=0;
+        high=i-1;
+        while(low<=high){
+            mid=(low+high)/2;
+            if(a[mid] <= a[i])low=mid+1;
+            else high=mid-1;
+        }
+        temp=a[i];
+        for(j=i;j>high+1;j--)a[j]=a[j-1];
+        a[j]=temp;
+    }
+}
 void ShellSort(int a[],int n){
     int i,j,k,t,q,d;
     for(d=n/2;d>=1;d/=2){                   //设定增量，但这样的增量并不科学
