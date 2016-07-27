@@ -17,6 +17,8 @@ void BubbleSort(int a[],int n);
 //冒泡排序
 void InsertSort(int a[],int n);
 //插入排序
+void BinInsertSort(int a[],int n);
+//折半插入排序
 void ShellSort(int a[],int n);
 //希尔排序
 void QuickSort_sub(int a[],int start,int end);
