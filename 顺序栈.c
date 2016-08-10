@@ -231,6 +231,6 @@ Status Caculate(char *str,int len){
 }
 int main(){
 	SElemType result;
-	trans2rpn("3*(4+6-5)/(7-4)",15);
+	Caculate("3*(4+6-5)/(7-4)",15);
 	return 0;
 }
