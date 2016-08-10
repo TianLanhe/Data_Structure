@@ -8,10 +8,8 @@
 #define TRUE 1
 #define FALSE 0
 #define OK 1
-#define INFEASIBLE -1
-#define OVERFLOW_ -2
 #define Status int
-#define FreeNode(p) _FreeNode(&(p))
+#define FreeNode(p) _FreeNode(&(p))	//传入一级指针即可
 typedef struct{						//节点数据域类型
 	double coef;				   	//系数
 	int expn;						//指数
@@ -49,14 +47,14 @@ Status DestroyList(LinkList *linklist);
 Status ClearList(LinkList *linklist);
 //将线性链表linklist重置为空表，并释放原链表的结点空间
 Status InsFirst(Link *head,Link *p);
-//已知head指向线性链表的头结点，将s所指结点插入在第一个结点之前
+//已知head指向线性链表的头结点，将p所指的一个(串)结点插入在第一个结点之前
 Status DelFirst(Link *head,Link **p);
 //已知head指向线性链表的头结点，删除链表中的第一个结点并以q返回
 Status Append(LinkList *linklist,Link *p);
 //将指针p所指（彼此以指针相链）的一串结点链接在线性链表linklist的最后一个节点
 //之后，并改变链表linklist的尾指针指向新的尾结点
 Status Remove(LinkList *linklist,Link **p);
-//删除线性链表的尾结点并以q返回，改变链表linklist的尾指针指向新的尾结点
+//删除线性链表的尾结点并以p返回，改变链表linklist的尾指针指向新的尾结点
 Status InsBefore(LinkList *linklist,Link **p,Link *h);
 //已知p指向线性链表中的一个结点，将h所指结点插入在p所指结点之前，
 //并修改指针p指向新插入的节点
@@ -74,9 +72,9 @@ Status ListEmpty(LinkList linklist);
 int ListLength(LinkList linklist);
 //返回线性链表linklist的元素个数
 Link *GetHead(LinkList linklist);
-//返回线性链表linklist头结点的位置
+//返回线性链表linklist头结点
 Link *GetLast(LinkList linklist);
-//返回线性链表linklist最后一个结点的位置
+//返回线性链表linklist尾结点
 Link *PriorPos(LinkList linklist,Link *p);
 //已知p指向线性链表的一个结点，返回p所指结点的直接前驱的位置
 //若无前驱，则返回NULL
@@ -85,9 +83,6 @@ Link *NextPos(LinkList linklist,Link *p);
 //若无后继，则返回NULL
 Status LocatePos(LinkList linklist,int i,Link **p);
 //返回p指示线性链表linklist中第i个结点的位置并返回OK，i值不合法时返回ERROR
-Link *LocateElem(LinkList linklist,ElemType e,Status (*compare)(ElemType,ElemType));
-//返回线性链表中第一个与e满足函数compare()判定关系的元素的位置
-//若不存在这样的元素，则返回NULL
 Status inverse(Link *p);
 //遍历函数用的功能函数，其功能是将结点p中数据域元素的coef(系数)取反
 Status PrintLinkList(Link *p);
@@ -429,15 +424,15 @@ void BankSimulation(int opentime,int closetime,int intertime_arr,int intertime_w
 
 
 Status InitQueue(LinkQueue *Q){
-	if(!InitList(Q))return ERROR;
+	if(InitList(Q) == ERROR)return ERROR;
 	else return OK;
 }
 Status DestroyQueue(LinkQueue *Q){
-	if(!DestroyList(Q))return ERROR;
+	if(DestroyList(Q) == ERROR)return ERROR;
 	else return OK;
 }
 Status ClearQueue(LinkQueue *Q){
-	if(!ClearList(Q))return ERROR;
+	if(ClearList(Q) == ERROR)return ERROR;
 	else return OK;
 }
 Status QueueEmpty(LinkQueue Q){
@@ -448,25 +443,26 @@ int QueueLength(LinkQueue Q){
 }
 Status EnQueue(LinkQueue *Q,QData e){
 	QNode *t;
-	MakeNode(&t,e);
-	if(!Append(Q,t))return ERROR;
+	if(MakeNode(&t,e) == ERROR)return ERROR;
+	if(Append(Q,t) == ERROR)return ERROR;		//在链表尾插入节点模拟入队列
 	else return OK;
 }
 Status GetQHead(LinkQueue Q,QData *e){
 	QNode *t;
-	if(!(t=GetHead(Q)))return ERROR;
+	if((t=GetHead(Q)) == NULL)return ERROR;		//若链表(队列)为空，则GetHead返回NULL
 	else{
 		*e=t->data;
 		return OK;
 	}
 }
 Status DeQueue(LinkQueue *Q,QData *e){
-	QNode *t;
+	QNode *t;									//删除链表第一个结点，模拟出队列
 	t=Q->head->next;
-	if(!t)return ERROR;
+	if(!t)return ERROR;					//队列为空，无法出队列，返回ERROR
 	if(!t->next)Q->tail=Q->head;
 	Q->head->next=t->next;
 	*e=t->data;
+	free(t);
 	Q->len--;
 	return OK;
 }
@@ -492,11 +488,11 @@ Status StackTraverse(SqStack stack,void (*visit)(SElemType)){
 	return OK;
 }
 Status SetData(SData *e,double dou,int num){
-	if(!SetPolyn(e,dou,num))return ERROR;
+	if(SetPolyn(e,dou,num) == ERROR)return ERROR;
 	else return OK;
 }
 Status InitStack(SqStack *stack){
-	if(!InitList(stack))return ERROR;
+	if(InitList(stack) == ERROR)return ERROR;
 	else return OK;
 }
 void PrintStr(SElemType e){
@@ -509,29 +505,29 @@ void PrintNode(SElemType e){
 	printf("%d   %d\n",(int)(e.data)->coef,(e.data)->expn);
 }
 Status DestroyStack(SqStack *stack){
-	if(!DestroyList(stack))return ERROR;
+	if(DestroyList(stack) == ERROR)return ERROR;
 	else return OK;
 }
 Status ClearStack(SqStack *stack){
-	if(!ClearList(stack))return ERROR;
+	if(ClearList(stack) == ERROR)return ERROR;
 	else return OK;
 }
 Status StackEmpty(SqStack stack){
 	return ListEmpty(stack);
 }
 Status GetTop(SqStack stack,SElemType **e){
-	if(!(*e=GetLast(stack)))return ERROR;
-	return OK;
+	if((*e=GetLast(stack)) == NULL)return ERROR;	//若空栈，即空链表，
+	return OK;										//则GetLast返回NULL
 }
 int StackLength(SqStack stack){
 	return ListLength(stack);
 }
 Status Push(SqStack *stack,SElemType *e){
-	if(!Append(stack,e))return ERROR;
+	if(Append(stack,e) == ERROR)return ERROR;		//在链表插入一个结点，模拟入栈
 	else return OK;
 }
 Status Pop(SqStack *stack,SElemType **e){
-	if(!Remove(stack,e))return ERROR;
+	if(Remove(stack,e) == ERROR)return ERROR;		//在链表删除一个结点，模拟出栈
 	else return OK;
 }
 
@@ -542,6 +538,7 @@ Status Pop(SqStack *stack,SElemType **e){
 void _FreeNode(Link **p){
 	if(p&&*p){
 		if((*p)->data)free((*p)->data);
+		(*p)->data=NULL;
 		free(*p);
 		*p=NULL;
 	}
@@ -554,7 +551,7 @@ Status MakeNode(Link **node,ElemType data){
 	return OK;
 }
 Status InitList(LinkList *linklist){
-	linklist->tail=linklist->head=(Link *)malloc(sizeof(Link));
+	linklist->tail=linklist->head=(Link *)malloc(sizeof(Link));	//分配虚头节点，链表头和尾均指向头结点表示空链表
 	if(!linklist->head)return ERROR;
 	linklist->head->data=NULL;
 	linklist->head->next=NULL;
@@ -562,7 +559,7 @@ Status InitList(LinkList *linklist){
 	return OK;
 }
 Status DestroyList(LinkList *linklist){
-	if(!ClearList(linklist))return ERROR;
+	ClearList(linklist);
 	free(linklist->head);
 	linklist->len=0;
 	linklist->tail=NULL;
@@ -571,41 +568,38 @@ Status DestroyList(LinkList *linklist){
 }
 Status ClearList(LinkList *linklist){
 	Link *pf,*pb;
-	pf=linklist->head;
-	pb=linklist->head->next;
-	if(!pb)return ERROR;
+	pb=linklist->head->next;			//将结点都释放了
 	while(pb){
-		pf->next=pb->next;
+		pf=pb->next;
 		FreeNode(pb);
-		pb=pf->next;
+		pb=pf;
 	}
-	linklist->len=0;
-	linklist->tail=linklist->head;
+	linklist->len=0;					//修改长度
+	linklist->head->next=NULL;			//修改虚头结点
+	linklist->tail=linklist->head;		//修改链尾指针
 	return OK;
 }
 Status InsFirst(Link *head,Link *p){
 	Link *tail;
 	if(p==NULL)return ERROR;
-	for(tail=p;tail->next;tail=tail->next);
-	tail->next=head->next;
+	for(tail=p;tail->next;tail=tail->next);	//找到p的尾巴
+	tail->next=head->next;					//连接
 	head->next=p;
 	return OK;
 }
 Status DelFirst(Link *head,Link **p){
-	Link *t;
-	t=head->next;
-	if(!t)return ERROR;
-	head->next=t->next;
-	t->next=NULL;
-	*p=t;
+	if(head->next == NULL)return ERROR;	//如果是空链表，无法删除，返回ERROR
+	*p=head->next;						//取出第一个结点
+	head->next=(*p)->next;				//修改指向第二个结点
+	(*p)->next=NULL;
 	return OK;
 }
 Status Append(LinkList *linklist,Link *p){
 	Link *t;
 	int i;
-	if(!p)return ERROR;
-	for(i=1,t=p;t->next;t=t->next,i++);
-	linklist->tail->next=p;
+	if(p==NULL)return ERROR;
+	for(i=1,t=p;t->next;t=t->next,i++);	//找到p的尾巴，同时统计结点个数
+	linklist->tail->next=p;				//连接
 	linklist->tail=t;
 	linklist->len+=i;
 	return OK;
@@ -614,24 +608,18 @@ Status Remove(LinkList *linklist,Link **p){
 	Link *t;
 	if(linklist->len==0)return ERROR;
 	*p=linklist->tail;
-	if(linklist->len==1){
-		FreeNode(linklist->head);
-		InitList(linklist);
-	}else{
-		for(t=linklist->head;t->next!=linklist->tail;t=t->next);
-		t->next=NULL;
-		linklist->tail=t;
-		linklist->len--;
-	}
+	linklist->len--;
+	for(t=linklist->head;t->next!=linklist->tail;t=t->next);
+	t->next=NULL;
+	linklist->tail=t;
 	return OK;
 }
 Status InsBefore(LinkList *linklist,Link **p,Link *h){
 	Link *t;
-	if(!linklist->len)return ERROR;
+	if(linklist->len==0)return ERROR;
 	for(t=linklist->head;t->next&&t->next!=*p;t=t->next);
 	if(!t->next)return ERROR;
-	h->next=t->next;
-	t->next=h;
+	if(InsFirst(t,h) == ERROR)return ERROR;
 	linklist->len++;
 	*p=h;
 	return OK;
@@ -639,21 +627,22 @@ Status InsBefore(LinkList *linklist,Link **p,Link *h){
 Status InsAfter(LinkList *linklist,Link **p,Link *h){
 	Link *pf,*pb;
 	ElemType t;
-	if(!InsBefore(linklist,p,h))return ERROR;
-	pf=*p;
-	pb=pf->next;
+	if(InsBefore(linklist,p,h) == ERROR)return ERROR;	//先将h插入到p之前
+	pf=*p;												//再换一下h和p的内容
+	pb=pf->next;										//这样就相当于把h插入到p之后了
 	t=pf->data;
 	pf->data=pb->data;
 	pb->data=t;
-	*p=(*p)->next;
+	*p=pb;												//最后将新插入的h赋值给p返回
 	return OK;
 }
 Status LinkListInsert(LinkList *linklist,int position,ElemType e){
-	Link *t;
+	Link *t;									//只能插入到[0,len)之间的位置，不会改变尾结点
 	Link *newnode;
-	if(!LocatePos(*linklist,position-1,&t))return ERROR;
-	if(!MakeNode(&newnode,e))return ERROR;
-	if(!InsFirst(t,newnode))return ERROR;
+	if(LocatePos(*linklist,position-1,&t) == ERROR)return ERROR;
+	if(MakeNode(&newnode,e) == ERROR)return ERROR;
+	if(InsFirst(t,newnode) == ERROR)return ERROR;
+	linklist->len++;
 	return OK;
 }
 Status SetCurElem(Link *p,ElemType e){
@@ -678,10 +667,8 @@ Link *GetHead(LinkList linklist){
 	return (linklist.head)->next;
 }
 Link *GetLast(LinkList linklist){
-	Link *t;
 	if(ListEmpty(linklist))return NULL;
-	for(t=linklist.head;t->next;t=t->next);
-	return t;
+	else return linklist.tail;
 }
 Link *PriorPos(LinkList linklist,Link *p){
 	Link *t;
@@ -693,20 +680,18 @@ Link *PriorPos(LinkList linklist,Link *p){
 Link *NextPos(LinkList linklist,Link *p){
 	Link *t;
 	if(p==NULL)return NULL;
-	for(t=linklist.head;t&&t!=p;t=t->next);
-	if(!t)return NULL;
-	else return t->next;
+	for(t=linklist.head;t&&t!=p;t=t->next);	//找到结点p
+	if(!t)return NULL;						//若没找到结点p返回ERROR
+	else return t->next;					//否则返回p的下一个节点
 }
 Status LocatePos(LinkList linklist,int i,Link **p){
 	int count;
 	Link *t;
-	if(i<0||i>=linklist.len)return ERROR;
+	if(i<0||i>=linklist.len)return ERROR;		//位置非法返回ERROR
 	for(count=0,t=(linklist.head)->next;count<i&&t;t=t->next,count++);
 	if(!t)return ERROR;
 	*p=t;
 	return OK;
-}
-Link *LocateElem(LinkList linklist,ElemType e,Status (*compare)(ElemType,ElemType)){
 }
 Status inverse(Link *p){
 	if(!p)return ERROR;
@@ -720,7 +705,9 @@ Status PrintLinkList(Link *p){
 }
 Status ListTraverse(LinkList linklist,Status (*visit)(Link*)){
 	Link *p;
-	for(p=(linklist.head)->next;p;p=p->next)if(!visit(p))return ERROR;
+	for(p=(linklist.head)->next;p;p=p->next)
+		if(visit(p) == ERROR)
+			return ERROR;
 	return OK;
 }
 
