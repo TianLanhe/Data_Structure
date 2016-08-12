@@ -122,11 +122,13 @@ Status BracketMatch(char *str){
 			case ']':if(StackEmpty(stack))return ERROR;
 					 GetTop(stack,&t);
 					 if(t==1)Pop(&stack,&t);
+					 else return ERROR;
 					 break;
 			case '(':Push(&stack,2);break;
 			case ')':if(StackEmpty(stack))return ERROR;
 					 GetTop(stack,&t);
 					 if(t==2)Pop(&stack,&t);
+					 else return ERROR;
 					 break;
 		}
 		str++;
@@ -231,6 +233,7 @@ Status Caculate(char *str,int len){
 }
 int main(){
 	SElemType result;
-	Caculate("3*(4+6-5)/(7-4)",15);
+	//Caculate("3*(4+6-5)/(7-4)",15);
+	printf("%d\n",BracketMatch("([(]])])"));
 	return 0;
 }
