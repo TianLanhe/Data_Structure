@@ -34,3 +34,4 @@ char *strrchr(char *p,char ch);
 char *strstr(char *p1,char *p2);
 //字符串匹配函数
 #endif
+
