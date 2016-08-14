@@ -4,25 +4,30 @@
 #define OK 0
 #define Status int
 typedef struct {
-	char *ch;		//´¢´æ×Ö·û´®£¬Ê¹ÓÃ¶¯Ì¬·ÖÅä
-	int len;		//´æ´¢×Ö·û´®³¤¶È
+	char *ch;		//å‚¨å­˜å­—ç¬¦ä¸²ï¼Œä½¿ç”¨åŠ¨æ€åˆ†é…
+	int len;		//å­˜å‚¨å­—ç¬¦ä¸²é•¿åº¦
 }HString;
 Status InitStr(HString *str);
-//³õÊ¼»¯str£¬½«¸÷Ïî¸³ÖµÎª0
+//åˆå§‹åŒ–strï¼Œå°†å„é¡¹èµ‹å€¼ä¸º0
 Status StrAssign(HString *str1,char *str2);
-//Éú³ÉÒ»¸öÆäÖµµÈÓÚstr2µÄ´®str1
+//ç”Ÿæˆä¸€ä¸ªå…¶å€¼ç­‰äºstr2çš„ä¸²str1
 int StrCompare(HString str1,HString str2);
-//°´×ÖµäĞò±È½ÏÁ½¸ö´®str1ºÍstr2£¬ÈôÏàµÈ·µ»Ø0£¬Èôstr1<str2£¬·µ»Ø´óÓÚ´óÓÚ0µÄÕûÊı¡£Èôstr1>str2£¬·µ»ØĞ¡ÓÚ0µÄÕûÊı
+//æŒ‰å­—å…¸åºæ¯”è¾ƒä¸¤ä¸ªä¸²str1å’Œstr2ï¼Œè‹¥ç›¸ç­‰è¿”å›0ï¼Œè‹¥str1<str2ï¼Œè¿”å›å¤§äºå¤§äº0çš„æ•´æ•°ã€‚è‹¥str1>str2ï¼Œè¿”å›å°äº0çš„æ•´æ•°
 int StrLength(HString str);
-//·µ»ØSµÄÔªËØ¸öÊı£¬¼´´®µÄ³¤¶È
+//è¿”å›Sçš„å…ƒç´ ä¸ªæ•°ï¼Œå³ä¸²çš„é•¿åº¦
 Status ClearString(HString *str);
-//½«´®strÇåÎª¿Õ´®£¬²¢ÊÍ·ÅstrËùÕ¼¿Õ¼ä
+//å°†ä¸²stræ¸…ä¸ºç©ºä¸²ï¼Œå¹¶é‡Šæ”¾stræ‰€å ç©ºé—´
 Status Concat(HString *str3,HString str1,HString str2);
-//ÓÃstr3·µ»Østr1ºÍstr2Á¬½Ó¶ø³ÉµÄĞÂ´®
+//ç”¨str3è¿”å›str1å’Œstr2è¿æ¥è€Œæˆçš„æ–°ä¸²
 Status SubString(HString *sub,HString str,int position,int length);
-//0<=position<str.len,len>=0,·µ»Ø´®µÄµÚposition¸ö×Ö·ûÆğ³¤¶ÈÎªlengthµÄ×Ó´®
+//0<=position<str.len,len>=0,è¿”å›ä¸²çš„ç¬¬positionä¸ªå­—ç¬¦èµ·é•¿åº¦ä¸ºlengthçš„å­ä¸²
 Status PrintStr(HString str);
-//´òÓ¡´®strµÄÄÚÈİ
+//æ‰“å°ä¸²strçš„å†…å®¹
+Status Next(HString str,int *next);
+//KMPæ¨¡å¼åŒ¹é…ç®—æ³•æ±‚æ”¹è‰¯ç‰ˆçš„nextæ•°ç»„
+Status FindSubString(HString str,HString sub,int position,int *result);
+//KMPæ¨¡å¼åŒ¹é…ã€‚åœ¨positionä½ç½®ä¹‹åæŸ¥æ‰¾strçš„å­ä¸²subï¼Œè‹¥æŸ¥æ‰¾æˆåŠŸï¼Œåˆ™è¿”å›OKï¼Œå¹¶å°†å­ä¸²ä½ç½®èµ‹å€¼å†resultä¸­è¿”å›ã€‚è‹¥æŸ¥æ‰¾å¤±è´¥åˆ™è¿”å›ERROR
+
 Status InitStr(HString *str){
 	str->ch=NULL;
 	str->len=0;
@@ -108,15 +113,52 @@ Status PrintStr(HString str){
 	if(!str.ch)return ERROR;
 	printf("%s\n",str.ch);
 }
+Status Next(HString str,int *next){
+	int i,j;
+	if(str.ch == NULL || next == NULL)return ERROR;
+	i=0;
+	j=-1;
+	next[0]=-1;
+	while(i<str.len){
+		if(j == -1 || str.ch[i] == str.ch[j]){
+			i++;
+			if(i >= str.len)return OK;
+			j++;
+			if(str.ch[i] != str.ch[j])
+				next[i]=j;
+			else
+				next[i]=next[j];
+		}else{
+			j=next[j];
+		}
+	}
+	return OK;
+}
+Status FindSubString(HString str,HString sub,int position,int *result){
+	int i,j;
+	int *next;
+	if(position<0 || position >= str.len)return ERROR;
+	next=(int*)malloc(sizeof(int)*sub.len);
+	if(!next)return ERROR;
+	if(Next(sub,next) == ERROR)return ERROR;
+	for(i=position,j=0;i<str.len&&j<sub.len;i++,j++){
+		while(str.ch[i]!=sub.ch[j] && j!=-1){
+			j=next[j];
+		}
+	}
+	if(j >= sub.len){
+		*result=i-sub.len;
+		return OK;
+	}else return ERROR;
+}
 int main(){
 	HString str1,str2;
+	int result;
 	InitStr(&str1);
 	InitStr(&str2);
-	StrAssign(&str1,"hello ");
-	StrAssign(&str2,"world!");
-	PrintStr(str2);
-	SubString(&str1,str2,1,3);
-	PrintStr(str1);
-	printf("%d\n",str1.len);
+	StrAssign(&str1,"0000001234");
+	StrAssign(&str2,"0123");
+	if(FindSubString(str1,str2,0,&result) == ERROR)printf("error\n");
+	else printf("%d\n",result);
 	return 0;
 }
