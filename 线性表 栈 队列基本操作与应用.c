@@ -96,8 +96,7 @@ Status ListTraverse(LinkList linklist,Status (*visit)(Link*));
 
 //链表应用——多项式基本操作：
 Status SetPolyn(ElemType *e,double coef,int expn);
-//分配由e指向的元素的数据值，并设置其coef和expn成员，并返回OK
-//若分配失败，则返回ERROR
+//分配由e指向的元素的数据值，并设置其coef和expn成员，并返回OK，若分配失败，则返回ERROR
 Status CreatPolyn(polynomail *p,int m);
 //输入m项的系数和指数，建立表示一元多项式的有序链表p
 Status DestroyPolyn(polynomail *p);
@@ -114,7 +113,7 @@ void SubtractPolyn(polynomail *pa,polynomail *pb);
 //完成一元多项式的相减运算，即：pa=pa-pb，并销毁一元多项式pb
 Link *sub_MultiplyPolyn(Link *p,polynomail *pb);
 //完成单项式的相加运算，即：pc=a*pb，是一元多项式相乘的基础
-void MultiplyPolyn(polynomail *pa,polynomail *pb);
+Status MultiplyPolyn(polynomail *pa,polynomail *pb);
 //完成一元多项式的相乘运算，即：pa=pa*pb，并销毁一元多项式pb
 
 
@@ -482,7 +481,7 @@ Status QueueTraverse(LinkQueue Q,void (*visit)(QData)){
 
 Status StackTraverse(SqStack stack,void (*visit)(SElemType)){
 	if(stack.len<=0)return ERROR;
-	SElemType *e;
+	SElemType *e;							//这里用了void的，应该用Status比较好
 	for(e=(stack.head)->next;e;e=e->next)visit(*e);
 	printf("\n");
 	return OK;
@@ -658,23 +657,25 @@ Status ListEmpty(LinkList linklist){
 	else return FALSE;
 }
 int ListLength(LinkList linklist){
-	Link *t;
-	int i;
+	Link *t;							//不根据linklist.len直接获得
+	int i;								//遍历链表并计算节点个数
 	for(t=linklist.head,i=0;t->next;t=t->next,i++);
 	return i;
 }
 Link *GetHead(LinkList linklist){
-	return (linklist.head)->next;
+	return (linklist.head)->next;		//根据linklist.head直接返回第一个
 }
 Link *GetLast(LinkList linklist){
-	if(ListEmpty(linklist))return NULL;
-	else return linklist.tail;
+ 	Link *t; 							//不根据linklist.tail直接获得，通过遍历链表得到最后一个
+	if(ListEmpty(linklist) == TRUE)return NULL;	//如果是空表，则没有最后一个，返回ERROR
+	for(t=linklist.head;t->next;t=t->next); //一直走到头，返回该节点
+	return t;
 }
 Link *PriorPos(LinkList linklist,Link *p){
 	Link *t;
-	if(p==linklist.head||p==NULL)return NULL;
-	for(t=linklist.head;t->next&&t->next!=p;t=t->next);
-	if(!t->next)return NULL;
+	if(p==linklist.head||p==NULL)return NULL;		//该节点已是首节点，无上一个结点，返回ERROR
+	for(t=linklist.head;t->next&&t->next!=p;t=t->next);	//一直走到p的上一个
+	if(!t->next)return NULL;						//若没找到下一个是p，即p不是链表中的结点，返回ERROR
 	else return t;
 }
 Link *NextPos(LinkList linklist,Link *p){
@@ -718,17 +719,22 @@ void Conversion(int num,int base){
 	SqStack stack;
 	SData e;
 	SElemType *t;
+	int basenum[100],i;
 	InitStack(&stack);
 	if(!num)printf("0\n");
+	for(i=0;i<100;i++){				//因为超过十进制就要用ABCD了
+		if(i<10)basenum[i]='0'+i;	//所以用一个数组储存一张表，该表是该进制所用的符号集合
+		else basenum[i]='A'+i-10;
+	}
 	while(num){
-		SetData(&e,0,num%base);
+		SetData(&e,0,basenum[num%base]);	//把该进制所用的符号入栈，低数位先入栈，高位后入栈
 		MakeNode(&t,e);
 		Push(&stack,t);
 		num/=base;
 	}
 	while(!StackEmpty(stack)){
-		Pop(&stack,&t);
-		printf("%d",t->data->expn);
+		Pop(&stack,&t);			//出栈并打印
+		printf("%c",t->data->expn);
 	}
 	printf("\n");
 	DestroyStack(&stack);
@@ -740,27 +746,27 @@ Status BracketMatch(char *str){
 	SData e;
 	for(;*str;str++){
 		if(*str=='['){
-			SetData(&e,0,1);
+			SetData(&e,0,1);	//用1表示'['
 			MakeNode(&t,e);
 			Push(&stack,t);
-		}else if(*str==']'){
+		}else if(*str==']'){	//用2表示']'
 			if(StackEmpty(stack))return ERROR;
 			GetTop(stack,&t);
 			if(t->data->expn==1){
 				Pop(&stack,&t);
 				FreeNode(t);
-			}
-		}else if(*str=='('){
+			}else return ERROR;
+		}else if(*str=='('){	//用3表示'('
 			SetData(&e,0,2);
 			MakeNode(&t,e);
 			Push(&stack,t);
-		}else if(*str==')'){
+		}else if(*str==')'){	//用4表示')'
 			if(StackEmpty(stack))return ERROR;
 			GetTop(stack,&t);
 			if(t->data->expn==2){
 				Pop(&stack,&t);
 				free(t);
-			}
+			}else return ERROR;
 		}
 	}
 	if(StackEmpty(stack)){
@@ -814,7 +820,7 @@ int Precede(char ch1,char ch2){
 Status GetNum(char **str,double *dou){
 	char s[11];
 	int n=0;
-	for(;(isdigit(**str)||**str=='.')&&**str;(*str)++){
+	for(;**str && (isdigit(**str)||**str=='.');(*str)++){
 		s[n++]=**str;
 	}
 	s[n]='\0';
@@ -843,7 +849,7 @@ SElemType *Calculator(char *str){
 	SElemType *e;
 	SData data;
 	double dou=0;
-	if(!BracketMatch(str))return ERROR;
+	if(BracketMatch(str) == ERROR)return ERROR;
 	InitStack(&optr);
 	InitStack(&opnd);
 	SetData(&data,0,'=');
@@ -851,7 +857,7 @@ SElemType *Calculator(char *str){
 	Push(&optr,e);
 	while(*str){
 		if(isdigit(*str)){
-			if(!GetNum(&str,&dou))break;
+			if(GetNum(&str,&dou) == ERROR)break;
 			SetData(&data,dou,0);
 			MakeNode(&e,data);
 			Push(&opnd,e);
@@ -993,8 +999,8 @@ Status RRevolveMatrix(TSMatrix *matrix1,TSMatrix matrix2){
 }
 Status TurnMatrix(TSMatrix *matrix1,TSMatrix matrix2){
 	TSMatrix temp;
-	if(!RRevolveMatrix(&temp,matrix2))return ERROR;
-	if(!RRevolveMatrix(matrix1,temp))return ERROR;
+	if(RRevolveMatrix(&temp,matrix2) == ERROR)return ERROR;
+	if(RRevolveMatrix(matrix1,temp) == ERROR)return ERROR;
 	return OK;
 }
 Status isPeace(SqStack stack,SData data){
@@ -1065,25 +1071,25 @@ void EightQueen(){
 
 
 Status SetPolyn(ElemType *e,double coef,int expn){
-	*e=(ElemType)malloc(sizeof(term));
-	if(!e)return ERROR;
-	(*e)->coef=coef;
-	(*e)->expn=expn;
+ 	*e=(ElemType)malloc(sizeof(term)); 	//注意这里ElemType本身就是一级指针类型
+	if(!e)return ERROR; 				//所以ElemType*是个二级指针
+	(*e)->coef=coef; 					//我也不知道当初为什么自己要这么设置
+ 	(*e)->expn=expn; 
 	return OK;
 }
 void SortPolyn(polynomail *p){
-	Link *p1,*p2;
+	Link *p1,*p2;						//采用直接插入排序
 	for(p1=p->head->next;p1;p1=p1->next){
 		for(p2=p->head->next;p2!=p1;p2=p2->next){
-			if(p2->data->expn==p1->data->expn){
-				Link *pri;
+			if(p2->data->expn==p1->data->expn){	//若后边待排序的节点的指数跟前面已排序
+				Link *pri;						//节点的指数相同，则应该合并两项，即删除后者，并入前者
 				p2->data->coef+=p1->data->coef;
 				pri=PriorPos(*p,p1);
 				DelFirst(pri,&p1);
 				FreeNode(p1);
 				p->len--;
-				if(abs(p2->data->coef)<1e-6){
-					pri=PriorPos(*p,p2);
+				if(abs(p2->data->coef)<1e-6){	//如果合并后系数为0，那也要把这个节点删除
+					pri=PriorPos(*p,p2);		//佩服自己当初思维如此缜密
 					DelFirst(pri,&p2);
 					FreeNode(p2);
 					p->len--;
@@ -1092,7 +1098,7 @@ void SortPolyn(polynomail *p){
 				break;
 			}else if(p1->data->expn<p2->data->expn){
 				Link *pri1,*pri2;
-				pri1=PriorPos(*p,p1);
+				pri1=PriorPos(*p,p1);			//在学生管理系统自己想得半死的插入排序，这里用了5行就搞定了
 				DelFirst(pri1,&p1);
 				pri2=PriorPos(*p,p2);
 				InsFirst(pri2,p1);
@@ -1101,26 +1107,26 @@ void SortPolyn(polynomail *p){
 			}
 		}
 	}
-	p->tail=GetLast(*p);
+	p->tail=GetLast(*p);					//在设置一下尾结点，更佩服当初自己缜密的思维
 }
 Status CreatPolyn(polynomail *p,int m){
 	int i,expn;
 	double coef;
 	ElemType e;
 	Link *s;
-	if(!InitList(p))return ERROR;
+	if(InitList(p) == ERROR)return ERROR;
 	for(i=0;i<m;i++){
 		printf("请输入第%d项的系数和指数：",i+1);
 		scanf("%lf%d",&coef,&expn);
-		if(!SetPolyn(&e,coef,expn))return ERROR;
-		if(!MakeNode(&s,e))return ERROR;
-		if(!Append(p,s))return ERROR;
+		if(SetPolyn(&e,coef,expn) == ERROR)return ERROR;	//输入数据，形成数据域
+		if(MakeNode(&s,e) == ERROR)return ERROR;			//包装进一个结点
+		if(Append(p,s) == ERROR)return ERROR;				//将结点插入链表尾
 	}
-	SortPolyn(p);
+	SortPolyn(p);											//再慢慢排序
 	return OK;
 }
 Status DestroyPolyn(polynomail *p){
-	if(!DestroyList(p))return ERROR;
+	if(DestroyList(p) == ERROR)return ERROR;
 	else return OK;
 }
 void PrintPolyn(polynomail p){
@@ -1142,7 +1148,7 @@ int PolynLength(polynomail p){
 	return ListLength(p);
 }
 void AddPolyn(polynomail *pa,polynomail *pb){
-	Link *ha,*hb,*hc;
+	Link *ha,*hb,*hc;					//利用归并的方法，将两个多项式合并成一个
 	ha=pa->head->next;
 	hb=pb->head->next;
 	hc=pa->head;
@@ -1151,8 +1157,7 @@ void AddPolyn(polynomail *pa,polynomail *pb){
 			hc->next=ha;
 			hc=hc->next;
 			ha=ha->next;
-		}
-		else if(ha->data->expn==hb->data->expn){
+		}else if(ha->data->expn==hb->data->expn){
 			Link *t;
 			ha->data->coef+=hb->data->coef;
 			t=hb;
@@ -1167,8 +1172,7 @@ void AddPolyn(polynomail *pa,polynomail *pb){
 				ha=ha->next;
 				hc=hc->next;
 			}
-		}
-		else{
+		}else{
 			hc->next=hb;
 			hc=hc->next;
 			hb=hb->next;
@@ -1191,31 +1195,31 @@ Link *sub_MultiplyPolyn(Link *p,polynomail *pb){
 	ElemType e=NULL;
 	double coef,coef_ori=p->data->coef;
 	int expn,expn_ori=p->data->expn;
-	for(pt=pb->head->next;pt;pt=pt->next){
-		coef=coef_ori;
-		expn=expn_ori;
+	for(pt=pb->head->next;pt;pt=pt->next){		//遍历pb的每个结点，分别于p相乘
+		coef=coef_ori;							//得到的新数据包装成结点并链成新链表
+		expn=expn_ori;							//然后返回这一串结点的首节点地址
 		coef*=pt->data->coef;
 		expn+=pt->data->expn;
-		if(!SetPolyn(&e,coef,expn))return NULL;
-		if(!MakeNode(&newnode,e))return NULL;
-		if(pt==pb->head->next)head=t=newnode;
+		if(SetPolyn(&e,coef,expn) == ERROR)return NULL;	//组成数据域
+		if(MakeNode(&newnode,e) == ERROR)return NULL;	//包装成行指针域的节点
+		if(pt==pb->head->next)head=t=newnode;			//将结点插入链表
 		else{
-			if(!InsFirst(t,newnode))return NULL;
+			if(InsFirst(t,newnode) == ERROR)return NULL;
 			t=t->next;
 		}
 	}
 	return head;
 }
-void MultiplyPolyn(polynomail *pa,polynomail *pb){
+Status MultiplyPolyn(polynomail *pa,polynomail *pb){
 	Link *ha;
 	Link *t;
 	ha=pa->head->next;
 	pa->tail=pa->head;
 	pa->head->next=NULL;
 	pa->len=0;
-	while(ha){
-		t=sub_MultiplyPolyn(ha,pb);
-		if(!Append(pa,t))return;
+	while(ha){								//将pa中每个结点分别于pb整个链表乘一遍
+		t=sub_MultiplyPolyn(ha,pb);			//返回一串结点，将这一串节点插入pa中
+		if(Append(pa,t) == ERROR)return ERROR;
 		t=ha;
 		ha=ha->next;
 		FreeNode(t);
@@ -1240,15 +1244,20 @@ int main(){
 	// MultiplyPolyn(&p1,&p2);
 	// printf("\n相乘的结果是：\n");
 	// PrintPolyn(p1);
-	// char str[20];
-	// SElemType *e;
-	// printf("请输入算式：");
-	// gets(str);
-	// e=Calculator(str);
-	// printf("结果为：%f\n",e->data->coef);
 
-	//BankSimulation(0,100,5,30,1);
+	char str[20];
+	SElemType *e;
+	printf("请输入算式：");
+	gets(str);
+	e=Calculator(str);
+	printf("结果为：%f\n",e->data->coef);
 
-	EightQueen();
+	// BankSimulation(0,100,5,30,1);
+
+	//EightQueen();
+
+	//Conversion(100000000,16);
+
+	// printf("%d\n",BracketMatch("([(]])])"));
 	return 0;
 }
