@@ -75,6 +75,10 @@ Status PrintCSTree(CSTNode *node);
 Status MiniSpanTree_PRIM(MGraph graph,int start);
 //普里姆法求从第start个顶点出发构造网graph的最小生成树，输出各条边。若start大于等于graph顶点数，返回ERROR
 //说明：包含打印
+int findparent(int *arr,int vertex);
+//库鲁斯卡尔法的子函数，往上求vertex的根节点，若两个结点的根节点都相同，则表示会构成环
+Status MiniSpanTree_Kruskal(MGraph graph);
+//库鲁斯卡尔法构造网graph的最小生成树，输出各条边。说明：包含打印
 Status TopologicalSort(MGraph oldgraph,int toposequ[]);
 //若有向图(网)oldgraph中无回路，则将oldgraph的一个拓扑序列保存在toposequ中并返回OK。若oldgraph是无向图(网)或有环，返回ERROR
 Status CopyGraph(MGraph *newgraph,MGraph oldgraph);
@@ -294,6 +298,71 @@ Status MiniSpanTree_PRIM(MGraph graph,int start){
 	}
 	printf("\n");
 	return OK;
+}
+Status MiniSpanTree_Kruskal(MGraph graph){
+	int parent[MAXVEX];
+	struct {
+		int begin;			//起始顶点
+		int end;			//终点
+		int weight;			//权
+	}edge[1000];			//无法确定边最大多少条，暂且用1000吧
+	int edgenum;
+	int i,j,index;
+	int parent_begin,parent_end;
+	int begin,end;
+	if(graph.vexnum == 0)return ERROR;
+	edgenum=0;
+	for(i=0;i<graph.vexnum;i++){
+		if(graph.kind == UDN)j=i+1;
+		else j=0;
+		while(j<graph.vexnum){
+			if(graph.arcs[i][j] != MAXINT){
+				edge[edgenum].begin=i;
+				edge[edgenum].end=j;
+				edge[edgenum].weight=graph.arcs[i][j];
+				edgenum++;
+			}
+			j++;
+		}
+	}
+	for(i=0;i<edgenum;i++){
+		index=i;
+		for(j=i+1;j<edgenum;j++){
+			if(edge[index].weight > edge[j].weight)index=j;
+		}
+		if(index != i){
+			int temp;
+			temp=edge[i].begin;
+			edge[i].begin=edge[index].begin;
+			edge[index].begin=temp;
+			temp=edge[i].end;
+			edge[i].end=edge[index].end;
+			edge[index].end=temp;
+			temp=edge[i].weight;
+			edge[i].weight=edge[index].weight;
+			edge[index].weight=temp;
+		}
+	}
+	for(i=0;i<graph.vexnum;i++)parent[i]=-1;
+	edgenum=0;
+	for(i=0;i<graph.arcnum;i++){
+		if(edgenum == graph.vexnum-1)break;
+		begin=edge[i].begin;
+		end=edge[i].end;
+		parent_begin=findparent(parent,begin);
+		parent_end=findparent(parent,end);
+		if(parent_begin != parent_end){
+			parent[parent_end]=parent_begin;
+			printf("<%d,%d>  ",begin,end);
+			edgenum++;
+		}
+	}
+	return OK;
+}
+int findparent(int *arr,int vertex){
+	while(arr[vertex] != -1)
+		vertex=arr[vertex];
+	return vertex;
 }
 Status DFSForest(MGraph graph,CSTNode **root){
 	int i;
@@ -722,7 +791,7 @@ int main(){
 	int dist[MAXVEX][MAXVEX];
 	int path[MAXVEX][MAXVEX][MAXVEX+2];
 	int i,j;
-	CreateGraph(&graph);
+	if(CreateGraph(&graph) == ERROR)return ERROR;
 	for(i=0;i<graph.vexnum;i++){
 		for(j=0;j<graph.vexnum;j++){
 			if(graph.arcs[i][j] == MAXINT)printf("∞");
@@ -730,19 +799,6 @@ int main(){
 		}
 		printf("\n");
 	}
-	if(FloShortPath(graph,path,dist) == ERROR)printf("error\n");
-	for(i=0;i<graph.vexnum;i++){
-		for(j=0;j<graph.vexnum;j++){
-			if(dist[i][j] == MAXINT)printf(" ∞");
-			else printf("%3d",dist[i][j]);
-		}
-		printf("\n");
-	}
-	for(i=0;i<graph.vexnum;i++){
-		for(j=1;j<path[0][i][0]+1;j++){
-			printf("%3d",path[0][i][j]);
-		}
-		printf("\n");
-	}
+	if(MiniSpanTree_Kruskal(graph) == ERROR)return ERROR;
 	return 0;
 }
