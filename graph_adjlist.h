@@ -88,8 +88,16 @@ int Distance(ALGraph graph,int v,int w);
 //计算两个顶点的距离，若无法直接到达，返回MAXINT，若v或w不是graph中的顶点，返回error
 Status MiniSpanTree_PRIM(ALGraph graph,int v);
 //普里姆法求从第start个顶点出发构造网graph的最小生成树，输出各条边
+Status MiniSpanTree_Kruskal(ALGraph graph);
+//库鲁斯卡尔法构造网graph的最小生成树，输出各条边。说明：包含打印
+int findparent(int *arr,int vertex);
+//库鲁斯卡尔法的子函数，往上求vertex的根节点，若两个结点的根节点都相同，则表示会构成环
 Status TopologicalSort(ALGraph oldgraph,int toposequ[]);
 //若有向图(网)oldgraph中无回路，则将oldgraph的一个拓扑序列保存在toposequ中并返回OK。若oldgraph是无向图(网)或有环，返回ERROR
+Status TopologicalOrder(ALGraph graph,int toposequ[],int etv[]);
+//求有向图(网)的拓扑序列和顶点最早开始时间，若图不是有向的，或者存在环，则返回ERROR
+Status CriticalPath(ALGraph graph);
+//求图(网)的关键路径并输出，若图不是有向的，或者存在环则返回ERROR
 Status CopyGraph(ALGraph *graph,ALGraph oldgraph);
 //复制(克隆)oldgraph到graph中
 Status hasLoop_un_sub(ALGraph *graph,int start,int visit[]);
