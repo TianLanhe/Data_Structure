@@ -1,4 +1,4 @@
-#infdef "graph_adjmat_h"
+#ifndef "graph_adjmat_h"
 #define "graph_adjmat_h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -77,8 +77,16 @@ Status PrintCSTree(CSTNode *node);
 Status MiniSpanTree_PRIM(MGraph graph,int start);
 //普里姆法求从第start个顶点出发构造网graph的最小生成树，输出各条边。若start大于等于graph顶点数，返回ERROR
 //说明：包含打印
+int findparent(int *arr,int vertex);
+//库鲁斯卡尔法的子函数，往上求vertex的根节点，若两个结点的根节点都相同，则表示会构成环
+Status MiniSpanTree_Kruskal(MGraph graph);
+//库鲁斯卡尔法构造网graph的最小生成树，输出各条边。说明：包含打印
 Status TopologicalSort(MGraph oldgraph,int toposequ[]);
 //若有向图(网)oldgraph中无回路，则将oldgraph的一个拓扑序列保存在toposequ中并返回OK。若oldgraph是无向图(网)或有环，返回ERROR
+Status TopologicalOrder(MGraph graph,int toposequ[],int etv[]);
+//求有向图(网)的拓扑序列和顶点最早开始时间，若图不是有向的，或者存在环，则返回ERROR
+Status CriticalPath(MGraph graph);
+//求图(网)的关键路径并输出，若图不是有向的，或者存在环则返回ERROR
 Status CopyGraph(MGraph *newgraph,MGraph oldgraph);
 //复制(克隆)oldgraph到newgraph中
 Status hasLoop_un_sub(MGraph graph,int start,int visit[]);
@@ -94,4 +102,3 @@ Status FloShortPath(MGraph graph,int path[MAXVEX][MAXVEX][MAXVEX+2],int dist[MAX
 //根据Floyd算法求图graph中每个顶点到其余顶点的距离(到自身距离为0，无法到达距离为MAXINT)
 //path[v][w][...]存储点v到w的最短路径，其中path[v][w][0]表示最短路径的顶点个数(包括起点与终点)，接下来n个元素为顶点。dist[v][w]表示顶点v到w的距离
 #endif
-
