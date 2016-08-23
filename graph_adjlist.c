@@ -1,3 +1,4 @@
+#include "graph_adlist.h"
 Status FloShortPath(ALGraph graph,int path[MAXVEX][MAXVEX][MAXVEX+2],int dist[MAXVEX][MAXVEX]){
 	int i,j,k;
 	if(path == NULL || dist == NULL)return ERROR;
@@ -125,8 +126,8 @@ Status hasLoop_un(ALGraph oldgraph){
 	int i;
 	ALGraph graph;
 	if(oldgraph.kind == DG || oldgraph.kind == DN)return ERROR;
-	if(CopyGraph(&graph,oldgraph) == ERROR)return ERROR;
-	for(i=0;i<graph.vexnum;i++)visit[i]=false;
+	if(CopyGraph(&graph,oldgraph) == ERROR)return ERROR;	//邻接表中不能直接修改内容，会影响原图
+	for(i=0;i<graph.vexnum;i++)visit[i]=false;				//故复制了一个
 	for(i=0;i<graph.vexnum;i++){
 		if(visit[i] == false){
 			if(hasLoop_un_sub(&graph,i,visit) == ERROR){
@@ -178,6 +179,86 @@ Status TopologicalSort(ALGraph graph,int toposequ[]){
 	for(i=0;i<graph.vexnum;i++)printf("%3d",toposequ[i]);
 	return OK;
 }
+Status TopologicalOrder(ALGraph graph,int toposequ[],int etv[]){
+	int count;
+	int stack[MAXVEX];
+	int top;
+	int top_toposequ;
+	int inarc[MAXVEX];
+	int i,j,topvex;
+	if(graph.vexnum==0 || toposequ==NULL || etv==NULL)return ERROR;	//判断参数合法性
+	if(graph.kind == UDG || graph.kind == UDN)return ERROR;		//只有有向的才能进行拓扑排序
+	for(i=0;i<graph.vexnum;i++){
+		inarc[i]=0;				//初始化入度数组
+		etv[i]=0;				//和顶点最早开始时间
+	}
+	for(i=0;i<graph.vexnum;i++){
+		for(j=FirstAdjVex(graph,graph.vertices[i].vexno);j>=0;j=NextAdjVex(graph,graph.vertices[i].vexno,j)){
+			if((topvex=VexNo(graph,j)) == ERROR)return ERROR;
+			inarc[topvex]++;	//统计各顶点入度
+		}
+	}
+	top=-1;
+	for(i=0;i<graph.vexnum;i++){
+		if(inarc[i] == 0){
+			top++;
+			stack[top]=i;		//将入度为0的顶点下标入栈，注意是下标入栈
+		}
+	}
+	top_toposequ=-1;
+	count=0;
+	while(top != -1){
+		topvex=stack[top];
+		top--;
+		top_toposequ++;
+		toposequ[top_toposequ]=topvex;	//将顶点下标存进拓扑序列中
+		count++;
+		for(i=FirstAdjVex(graph,graph.vertices[topvex].vexno);i>=0;i=NextAdjVex(graph,graph.vertices[topvex].vexno,i)){
+			if((j=VexNo(graph,i)) == ERROR)return ERROR;
+			inarc[j]--;
+			if(inarc[j] == 0){
+				top++;
+				stack[top]=j;
+			}
+			if(etv[j] < etv[topvex]+Distance(graph,graph.vertices[topvex].vexno,i))
+				etv[j]=etv[topvex]+Distance(graph,graph.vertices[topvex].vexno,i);
+		}
+	}
+	if(count < graph.vexnum)return ERROR;	//存在回路
+	else return OK;
+}
+Status CriticalPath(ALGraph graph){
+	int etv[MAXVEX];
+	int ltv[MAXVEX];
+	int toposequ[MAXVEX];
+	int ete,lte;
+	int i,j,topvex;
+	int top;
+	if(TopologicalOrder(graph,toposequ,etv) == ERROR)return ERROR;
+	top=graph.vexnum-1;
+	for(i=0;i<graph.vexnum;i++)ltv[i]=etv[top];
+	while(top != -1){
+		topvex=toposequ[top];
+		top--;
+		for(i=FirstAdjVex(graph,graph.vertices[topvex].vexno);i>=0;i=NextAdjVex(graph,graph.vertices[topvex].vexno,i)){
+			if((j=VexNo(graph,i)) == ERROR)return ERROR;
+			if(ltv[topvex] > ltv[j]-Distance(graph,graph.vertices[topvex].vexno,i))
+				ltv[topvex]=ltv[j]-Distance(graph,graph.vertices[topvex].vexno,i);
+		}
+	}
+	for(i=0;i<graph.vexnum;i++){
+		for(j=FirstAdjVex(graph,graph.vertices[i].vexno);j>=0;j=NextAdjVex(graph,graph.vertices[i].vexno,j)){
+			if((topvex=VexNo(graph,j)) == ERROR)return ERROR;
+			ete=etv[i];
+			lte=ltv[topvex]-Distance(graph,graph.vertices[i].vexno,j);
+			if(ete == lte){
+				printf("<%d,%d>  ",graph.vertices[i].vexno,j);
+			}
+		}
+	}
+	printf("\n");
+	return OK;
+}
 Status MiniSpanTree_PRIM(ALGraph graph,int v){
 	int i,j;
 	int index;
@@ -218,6 +299,64 @@ Status MiniSpanTree_PRIM(ALGraph graph,int v){
 	printf("\n");
 	return OK;
 }
+Status MiniSpanTree_Kruskal(ALGraph graph){
+	int parent[MAXVEX];
+	struct {
+		int begin;			//起始顶点
+		int end;			//终点
+		int weight;			//权
+	}edge[100];				//无法确定边最大多少条，暂且用100吧
+	int edgenum;
+	int i,j,k,index;
+	int parent_begin,parent_end;
+	int begin,end;
+	int weight;
+	ArcNode *arc;
+	if(graph.vexnum == 0)return ERROR;
+	edgenum=0;
+	for(i=0;i<graph.vexnum;i++){		
+		for(arc=graph.vertices[i].firstarc;arc;arc=arc->nextarc){//由于对于无向网，无法提前预知哪些边已经添加过了
+			weight=arc->weight;									//因此采用边添加边排序，若遇到同样的边，则不用添加
+			begin=graph.vertices[i].vexno;
+			end=arc->adjvex;
+			for(index=0;index<edgenum;index++){				//找到该插入的位置
+				if(edge[index].weight > weight)break;		//在此处插入
+				if(edge[index].end==begin && edge[index].begin==end)break;	//遇到同样的边
+			}
+			if(index==edgenum || edge[index].weight > weight){	//采用直接插入排序
+				for(k=edgenum-1;k>=index;k--){				//往后移一格
+					edge[k+1].begin=edge[k].begin;
+					edge[k+1].end=edge[k].end;
+					edge[k+1].weight=edge[k].weight;
+				}
+				edge[index].begin=begin;					//插入
+				edge[index].end=end;
+				edge[index].weight=weight;
+				edgenum++;
+			}			//else则遇到相同边，不用插入
+		}
+	}
+	for(i=0;i<graph.vexnum;i++)parent[i]=-1;
+	edgenum=0;
+	for(i=0;i<graph.arcnum;i++){
+		if(edgenum == graph.vexnum-1)break;
+		begin=edge[i].begin;
+		end=edge[i].end;
+		parent_begin=findparent(parent,VexNo(graph,begin));
+		parent_end=findparent(parent,VexNo(graph,end));
+		if(parent_begin != parent_end){
+			parent[parent_end]=parent_begin;
+			printf("<%d,%d>  ",begin,end);
+			edgenum++;
+		}
+	}
+	return OK;
+}
+int findparent(int *arr,int vertex){
+	while(arr[vertex] != -1)
+		vertex=arr[vertex];
+	return vertex;
+}
 int Distance(ALGraph graph,int v,int w){
 	int index;
 	int index2;
@@ -225,10 +364,10 @@ int Distance(ALGraph graph,int v,int w){
 	if((index=VexNo(graph,v)) == ERROR)return ERROR;
 	if((index2=VexNo(graph,w)) == ERROR)return ERROR;
 	for(node=graph.vertices[index].firstarc;node;node=node->nextarc){
-		if(node->adjvex == w)
+		if(node->adjvex == w)				//找到边<v,w>，返回其权
 			return node->weight;
 	}
-	return MAXINT;
+	return MAXINT;							//若没有找到边，返回无限大
 }
 Status DestroyCSTree(CSTNode **root){
 	CSTNode *node;
@@ -401,12 +540,13 @@ Status DeleteVex(ALGraph *graph,int v){
 		temp=node;
 		node=node->nextarc;
 		free(temp);
+		graph->arcnum--;							//注意这里要手动减少边数
 	}
 	for(;index<graph->vexnum-1;index++){			//将数组中顶点v的下标index以下的顶点晚上移一行
 		graph->vertices[index].vexno=graph->vertices[index+1].vexno;
 		graph->vertices[index].firstarc=graph->vertices[index+1].firstarc;
 	}
-	graph->vexnum--;
+	graph->vexnum--;								//最后还要记得减少顶点数
 	return OK;
 }
 Status DeleteArc(ALGraph *graph,int v,int w){
@@ -446,7 +586,7 @@ Status DeleteArc(ALGraph *graph,int v,int w){
 					}
 				}
 			}
-			graph->arcnum--;
+			graph->arcnum--;		//注意不要忘了减少边数
 			return OK;
 		}else{
 			pre=node;
@@ -459,8 +599,7 @@ int FirstAdjVex(ALGraph graph,int v){
 	int index;
 	ArcNode *firnode;
 	if(graph.vexnum == 0)return ERROR;
-	index=VexNo(graph,v);
-	if(index == -1)return ERROR;
+	if((index=VexNo(graph,v)) == -1)return ERROR;
 	firnode=graph.vertices[index].firstarc;
 	return firnode==NULL?ERROR:firnode->adjvex;
 }
@@ -469,10 +608,8 @@ int NextAdjVex(ALGraph graph,int v,int w){
 	int index2;
 	ArcNode *nextnode;
 	if(graph.vexnum == 0)return ERROR;
-	index=VexNo(graph,v);
-	if(index == -1)return ERROR;
-	index2=VexNo(graph,w);
-	if(index2 == -1)return ERROR;
+	if((index=VexNo(graph,v)) == -1)return ERROR;
+	if((index2=VexNo(graph,w)) == -1)return ERROR;
 	for(nextnode=graph.vertices[index].firstarc;nextnode && nextnode->adjvex != w;nextnode=nextnode->nextarc);
 	if(nextnode == NULL)return ERROR;
 	else nextnode=nextnode->nextarc;
@@ -485,7 +622,7 @@ Status DestroyGraph(ALGraph *graph){
 	graph->vexnum=0;
 	graph->arcnum=0;
 	graph->kind=0;
-	for(i=0;i<graph->vexnum;i++){
+	for(i=0;i<graph->vexnum;i++){				//释放边表
 		arcnode=graph->vertices[i].firstarc;
 	    while(arcnode){
 	    	temp=arcnode;
@@ -534,7 +671,7 @@ Status InsertArc(ALGraph *graph,int v,int w,int adj){
 	if(graph->kind == DG || graph->kind == UDG)
 		arcnode->weight=1;
 	else arcnode->weight=adj;
-	arcnode->nextarc=graph->vertices[start].firstarc;			//插入的位置是链表首部，即插入后成为v的第一条邻边，而不是最后一条
+	arcnode->nextarc=graph->vertices[start].firstarc;			//采用头插法，插入的位置是链表首部，即插入后成为v的第一条邻边，而不是最后一条
 	graph->vertices[start].firstarc=arcnode;
 	if(graph->kind == UDG || graph->kind == UDN){				//如果是无向图(网)，还要插入对称边
 		temp=(ArcNode*)malloc(sizeof(ArcNode));
@@ -559,8 +696,8 @@ Status CreateDG(ALGraph *graph){
 		printf("顶点数不合法！\n");
 		return ERROR;
 	}
-	graph->vexnum=vexnum;
-	printf("请依次输入顶点的编号(按默认编号输入-1)：");
+	graph->vexnum=vexnum;							   //邻接矩阵中下标就是顶点的编号
+	printf("请依次输入顶点的编号(按默认编号输入-1)：");//这里下标与编号分开，顶点编号可以任意，更加合理
 	scanf("%d",&vexnum);
 	if(vexnum == -1){
 		for(i=0;i<graph->vexnum;i++){
@@ -622,8 +759,8 @@ Status CreateDN(ALGraph *graph){
 		printf("顶点数不合法！\n");
 		return ERROR;
 	}
-	graph->vexnum=vexnum;
-	printf("请依次输入顶点的编号(按默认编号输入-1)：");
+	graph->vexnum=vexnum;							   //邻接矩阵中下标就是顶点的编号
+	printf("请依次输入顶点的编号(按默认编号输入-1)：");//这里下标与编号分开，顶点编号可以任意，更加合理
 	scanf("%d",&vexnum);
 	if(vexnum == -1){
 		for(i=0;i<graph->vexnum;i++){
@@ -689,8 +826,8 @@ Status CreateUDG(ALGraph *graph){
 		printf("顶点数不合法！\n");
 		return ERROR;
 	}
-	graph->vexnum=vexnum;
-	printf("请依次输入顶点的编号(按默认编号输入-1)：");
+	graph->vexnum=vexnum;							   //邻接矩阵中下标就是顶点的编号
+	printf("请依次输入顶点的编号(按默认编号输入-1)：");//这里下标与编号分开，顶点编号可以任意，更加合理
 	scanf("%d",&vexnum);
 	if(vexnum == -1){
 		for(i=0;i<graph->vexnum;i++){
@@ -806,4 +943,3 @@ Status CreateUDN(ALGraph *graph){
 	graph->arcnum=arcnum;
 	return OK;
 }
-
