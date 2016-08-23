@@ -1,5 +1,5 @@
-#ifndef "graph_adjmat_h"
-#define "graph_adjmat_h"
+#ifndef graph_adjmat_h
+#define graph_adjmat_h
 #include <stdio.h>
 #include <stdlib.h>
 #define Status int
