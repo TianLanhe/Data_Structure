@@ -1,4 +1,83 @@
 #include "graph_adjmat.h"
+Status TopologicalOrder(MGraph graph,int toposequ[],int etv[]){
+	int stack[MAXVEX];
+	int top;
+	int inarc[MAXVEX];
+	int top_toposequ;
+	int i,j;
+	int topvex;
+	int count;
+	if(graph.kind == UDN || graph.kind == UDG)return ERROR;	//如果是无向图，无法拓扑排序
+	if(toposequ==NULL || etv==NULL || graph.vexnum==0)return ERROR;	//判断参数合法性
+	top=-1;						//初始化栈底
+	top_toposequ=-1;			//初始化栈底
+	for(i=0;i<graph.vexnum;i++){
+		inarc[i]=0;
+		etv[i]=0;				//事件(顶点)最早发生时间
+	}
+	for(i=0;i<graph.vexnum;i++){
+		for(j=0;j<graph.vexnum;j++){
+			if(graph.arcs[i][j] != MAXINT){
+				inarc[j]++;					//统计各个顶点的入度
+			}
+		}
+	}
+	for(i=0;i<graph.vexnum;i++){			//循环一遍，把入度为0的顶点入栈
+		if(inarc[i] == 0){
+			top++;
+			stack[top]=i;
+		}
+	}
+	count=0;								//统计顶点个数，如果最后拓扑序列中顶点个数少于
+	while(top != -1){						//图的顶点个数，则表示存在回路，应返回ERROR
+		topvex=stack[top];
+		count++;					//栈顶元素出栈并推入toposequ中，
+		top--;
+		top_toposequ++;
+		toposequ[top_toposequ]=topvex;	//寻找以topvex为尾的边，然后删除终点的入度
+		for(i=FirstAdjVex(graph,topvex);i>=0;i=NextAdjVex(graph,topvex,i)){
+			inarc[i]--;
+			if(inarc[i] == 0){
+				top++;
+				stack[top]=i;
+			}
+			if(etv[i] < etv[topvex]+graph.arcs[topvex][i])
+				etv[i]=etv[topvex]+graph.arcs[topvex][i];
+		}
+	}
+	if(count != graph.vexnum)return ERROR;	//存在回路
+	else return OK;
+}
+Status CriticalPath(MGraph graph){
+	int etv[MAXVEX];			//顶点最早发生时间
+	int ltv[MAXVEX];			//顶点最晚发生时间
+	int ete,lte;				//边最早发生时间，边最晚发生时间
+	int toposequ[MAXVEX];		//拓扑序列
+	int top,topvex;
+	int i,j;							//进行拓扑排序并计算顶点最早发生时间
+	if(TopologicalOrder(graph,toposequ,etv) == ERROR)return ERROR;
+	top=graph.vexnum-1;
+	for(i=0;i<graph.vexnum;i++)ltv[i]=etv[top];
+	while(top != -1){			//对拓扑序列从尾开始倒序计算顶点最晚发生时间
+		topvex=toposequ[top];
+		top--;
+		for(i=FirstAdjVex(graph,topvex);i>=0;i=NextAdjVex(graph,topvex,i)){
+			if(ltv[topvex] > ltv[i]-graph.arcs[topvex][i])	//更新顶点最晚发生时间
+				ltv[topvex]=ltv[i]-graph.arcs[topvex][i];
+		}
+	}
+	for(i=0;i<graph.vexnum;i++){			//接下来根据顶点的时间计算每条边的最早发生时间与最晚发生时间
+		for(j=FirstAdjVex(graph,i);j>=0;j=NextAdjVex(graph,i,j)){//若相等，则证明其是关键边
+			ete=etv[i];
+			lte=ltv[j]-graph.arcs[i][j];
+			if(ete == lte){
+				printf("<%d,%d>  ",i,j);
+			}
+		}
+	}
+	printf("\n");
+	return OK;
+}
 Status FloShortPath(MGraph graph,int path[MAXVEX][MAXVEX][MAXVEX+2],int dist[MAXVEX][MAXVEX]){
 	int i,j,k;
 	if(path == NULL || dist == NULL)return ERROR;
@@ -104,7 +183,7 @@ Status hasLoop_un_sub(MGraph graph,int start,int visit[]){
 	if(visit[start] == true)return ERROR;
 	visit[start]=true;
 	for(nextvex=FirstAdjVex(graph,start);nextvex>=0;nextvex=NextAdjVex(graph,start,nextvex)){
-		if(DeleteArc(&graph,start,nextvex) == ERROR)return ERROR;
+		if(DeleteArc(&graph,start,nextvex) == ERROR)return ERROR;	//这里矩阵是副本，删除边无需担心影响到实参
 		if(hasLoop_un_sub(graph,nextvex,visit) == ERROR)return ERROR;
 	}
 	return OK;
@@ -201,6 +280,71 @@ Status MiniSpanTree_PRIM(MGraph graph,int start){
 	}
 	printf("\n");
 	return OK;
+}
+Status MiniSpanTree_Kruskal(MGraph graph){
+	int parent[MAXVEX];
+	struct {
+		int begin;			//起始顶点
+		int end;			//终点
+		int weight;			//权
+	}edge[1000];			//无法确定边最大多少条，暂且用1000吧
+	int edgenum;
+	int i,j,index;
+	int parent_begin,parent_end;
+	int begin,end;
+	if(graph.vexnum == 0)return ERROR;
+	edgenum=0;
+	for(i=0;i<graph.vexnum;i++){		//将图中所有的边提取出来
+		if(graph.kind == UDN)j=i+1;		//按权从小到大的顺序储存
+		else j=0;						//在edge中，然后顺序遍历
+		while(j<graph.vexnum){			//将不构成环的边添加进来
+			if(graph.arcs[i][j] != MAXINT){	//直至包含了所有顶点
+				edge[edgenum].begin=i;
+				edge[edgenum].end=j;
+				edge[edgenum].weight=graph.arcs[i][j];
+				edgenum++;
+			}
+			j++;
+		}
+	}
+	for(i=0;i<edgenum;i++){			//简单选择排序
+		index=i;
+		for(j=i+1;j<edgenum;j++){
+			if(edge[index].weight > edge[j].weight)index=j;
+		}
+		if(index != i){
+			int temp;
+			temp=edge[i].begin;
+			edge[i].begin=edge[index].begin;
+			edge[index].begin=temp;
+			temp=edge[i].end;
+			edge[i].end=edge[index].end;
+			edge[index].end=temp;
+			temp=edge[i].weight;
+			edge[i].weight=edge[index].weight;
+			edge[index].weight=temp;
+		}
+	}
+	for(i=0;i<graph.vexnum;i++)parent[i]=-1;	//用一个parent数组判断是否会构成回路
+	edgenum=0;
+	for(i=0;i<graph.arcnum;i++){
+		if(edgenum == graph.vexnum-1)break;
+		begin=edge[i].begin;
+		end=edge[i].end;
+		parent_begin=findparent(parent,begin);	//回溯到最上的parent
+		parent_end=findparent(parent,end);
+		if(parent_begin != parent_end){			//若parent不同，说明在不同连通分量，不会构成回路
+			parent[parent_end]=parent_begin;
+			printf("<%d,%d>  ",begin,end);
+			edgenum++;
+		}
+	}
+	return OK;
+}
+int findparent(int *arr,int vertex){
+	while(arr[vertex] != -1)
+		vertex=arr[vertex];
+	return vertex;
 }
 Status DFSForest(MGraph graph,CSTNode **root){
 	int i;
@@ -345,11 +489,11 @@ Status BFSTraverse(MGraph *graph,Status (*traverse)(int)){
 Status DeleteArc(MGraph *graph,int v,int w){
 	if(graph->vexnum == 0)return ERROR;
 	if(v<0 || v>=graph->vexnum)return ERROR;
-	if(w<0 || w>=graph->vexnum)return ERROR;
+	if(w<0 || w>=graph->vexnum)return ERROR;	//判断参数合法性
 	if(graph->arcs[v][w] != MAXINT){
 		graph->arcnum--;
 		graph->arcs[v][w]=MAXINT;
-		if(graph->kind == UDG || graph->kind == UDN)
+		if(graph->kind == UDG || graph->kind == UDN)	//若是无向的，还要删除对称边
 			graph->arcs[w][v]=MAXINT;
 	}
 	return OK;
@@ -359,12 +503,12 @@ Status InsertArc(MGraph *graph,int v,int w,int adj){
 	if(v<0 || v>=graph->vexnum)return ERROR;
 	if(w<0 || w>=graph->vexnum)return ERROR;
 	if(adj <= 0)return ERROR;						//判断参数的合法性
-	if(graph->arcs[v][w] != MAXINT)return ERROR;	//若已有边，返回error
-	if(graph->kind == DG || graph->kind == UDG){	//添加边，若是无向图(网)，还有添加对称边
+	if(graph->arcs[v][w] != MAXINT)return ERROR;	//若已有边，返回ERROR
+	if(graph->kind == DG || graph->kind == UDG){	//添加边，若是图，权为1
 		graph->arcs[v][w]=1;
-		if(graph->kind == UDG)graph->arcs[w][v]=1;
+		if(graph->kind == UDG)graph->arcs[w][v]=1;	//若是无向的，还要添加对称边
 	}else{
-		graph->arcs[v][w]=adj;
+		graph->arcs[v][w]=adj;						//若是网
 		if(graph->kind == UDN)graph->arcs[w][v]=adj;
 	}												
 	graph->arcnum++;
