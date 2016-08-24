@@ -33,10 +33,4 @@ void HeapSort_sub(int a[],int start,int length);
 //堆排序的子过程，假设[start,length)中除start外均满足堆的定义，调整start的位置使成为一个堆
 void HeapSort(int a[],int length);
 //堆排序，先建立初始堆，再循环处理，将堆顶元素移到末尾，对其余元素调整成为新堆
-void Search(int a[],int length,int target);
-//折半查找(迭代法)
-int BinarySearch_sub(int a[],int start,int end,int target);
-//折半查找(递归法)的子过程
-int BinarySearch(int a[],int length,int target);
-//折半查找(递归法)，封装了具体实现的子过程，只需要提供长度即可
 #endif
