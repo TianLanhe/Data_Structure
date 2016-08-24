@@ -31,12 +31,6 @@ void HeapSort_sub(int a[],int start,int length);
 //堆排序的子过程，假设[start,length)中除start外均满足堆的定义，调整start的位置使成为一个堆
 void HeapSort(int a[],int length);
 //堆排序，先建立初始堆，再循环处理，将堆顶元素移到末尾，对其余元素调整成为新堆
-void Search(int a[],int length,int target);
-//折半查找(迭代法)
-int BinarySearch_sub(int a[],int start,int end,int target);
-//折半查找(递归法)的子过程
-int BinarySearch(int a[],int length,int target);
-//折半查找(递归法)，封装了具体实现的子过程，只需要提供长度即可
 
 void creatarr(int **a,int n,int ran){
 	int i;
@@ -46,7 +40,10 @@ void creatarr(int **a,int n,int ran){
 }
 void display(int a[],int n){
     int i;
-    for(i=0;i<n;i++)printf("%2d ",a[i]);
+    for(i=0;i<n;i++){
+        printf("%2d ",a[i]);
+        if(!((i+1)%10))printf("\n");
+    }
     printf("\n");
 }
 void SelectSort(int a[],int n){
@@ -97,8 +94,8 @@ void BubbleSort(int a[],int n){
 void InsertSort(int a[],int n){
     int i,j,t,k;
     for(i=1;i<n;i++){
-        for(j=0;j<i;j++){
-        	if(a[j]>a[i]){
+        for(j=0;j<i;j++){       //其实在这里可以与前一个相比，若比前一个大，则不用交换，若小，则一边比较一边交换
+        	if(a[j]>a[i]){      //不用从第一个开始比较
                 t=a[i];
                 for(k=i-1;k>=j;k--)a[k+1]=a[k];
                 a[j]=t;
@@ -198,29 +195,6 @@ void HeapSort(int a[],int length){                  //堆排序
         HeapSort_sub(a,0,i-1);
     }
 }
-void Search(int a[],int length,int target){           //折半查找
-    int but=length-1,top=0;
-    int mid;
-    while(top<=but){
-        mid=(top+but)/2;
-        if(target==a[mid]){
-            printf("%d",mid);
-            break;
-        }else if(target>a[mid])top=mid+1;
-        else but=mid-1;
-    }
-    if(top>but)printf("The number is not in the list.");
-}
-int BinarySearch_sub(int a[],int start,int end,int target){    //递归法折半查找
-    int mid=(start+end)/2;
-    if(target==a[mid])return mid;
-    else if(start==end)return -1;
-    else if(target<a[mid])return BinarySearch_sub(a,start,mid-1,target);
-    else if(target>a[mid])return BinarySearch_sub(a,mid+1,end,target);
-}
-int BinarySearch(int a[],int length,int target){
-    return BinarySearch_sub(a,0,length-1,target);
-}
 int main(){
     // int a[]={1,5,3,6,10,55,9,2,87,12,34,75,33,47};
     // display(a,14);
@@ -229,7 +203,7 @@ int main(){
     int *a;
     creatarr(&a,20,100);
     display(a,20);
-    ShellSort(a,20);
+    BinInsertSort(a,20);
     display(a,20);
     return 0;
 }
