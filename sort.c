@@ -7,7 +7,10 @@ void creatarr(int **a,int n,int ran){
 }
 void display(int a[],int n){
     int i;
-    for(i=0;i<n;i++)printf("%2d ",a[i]);
+    for(i=0;i<n;i++){
+        printf("%2d ",a[i]);
+        if(!((i+1)%10))printf("\n");
+    }
     printf("\n");
 }
 void SelectSort(int a[],int n){
@@ -58,8 +61,8 @@ void BubbleSort(int a[],int n){
 void InsertSort(int a[],int n){
     int i,j,t,k;
     for(i=1;i<n;i++){
-        for(j=0;j<i;j++){
-        	if(a[j]>a[i]){
+        for(j=0;j<i;j++){       //其实在这里可以与前一个相比，若比前一个大，则不用交换，若小，则一边比较一边交换
+        	if(a[j]>a[i]){      //不用从第一个开始比较
                 t=a[i];
                 for(k=i-1;k>=j;k--)a[k+1]=a[k];
                 a[j]=t;
@@ -158,27 +161,4 @@ void HeapSort(int a[],int length){                  //堆排序
         a[0]=t;
         HeapSort_sub(a,0,i-1);
     }
-}
-void Search(int a[],int length,int target){           //折半查找
-    int but=length-1,top=0;
-    int mid;
-    while(top<=but){
-        mid=(top+but)/2;
-        if(target==a[mid]){
-            printf("%d",mid);
-            break;
-        }else if(target>a[mid])top=mid+1;
-        else but=mid-1;
-    }
-    if(top>but)printf("The number is not in the list.");
-}
-int BinarySearch_sub(int a[],int start,int end,int target){    //递归法折半查找
-    int mid=(start+end)/2;
-    if(target==a[mid])return mid;
-    else if(start==end)return -1;
-    else if(target<a[mid])return BinarySearch_sub(a,start,mid-1,target);
-    else if(target>a[mid])return BinarySearch_sub(a,mid+1,end,target);
-}
-int BinarySearch(int a[],int length,int target){
-    return BinarySearch_sub(a,0,length-1,target);
 }
