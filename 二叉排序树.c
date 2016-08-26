@@ -3,6 +3,8 @@
 #define OK 0
 #define ERROR -1
 #define Status int
+#define true 1
+#define false 0 
 typedef struct _bitree{
     int data;
     struct _bitree *lchild;
@@ -24,10 +26,12 @@ Status DeleteBST(BiTNode **tree,int target);
 //删除二叉排序树中关键字为target的节点(迭代法)，若已不存在target关键字的节点，则删除失败，返回ERROR
 //若存在target，则在删除该节点并调整节点，返回OK
 Status DeleteBST_recursion(BiTNode **tree,int target);
-//删除二叉排序树中关键字为target的节点(递归法)，若已不存在target关键字的节点，则删除失败，返回ERROR
+//删除二叉排序树中关键字为target的节点(递归法)，若不存在target关键字的节点，则删除失败，返回ERROR
 //若存在target，则在删除该节点并调整节点，返回OK
 Status Delete(BiTNode **node);
 //删除二叉树节点递归法的子函数，进行node节点的具体删除操作
+Status isBST(BiTNode *root);
+//判断该数是否是二叉平衡树，是则返回true，否则返回false
 
 Status InOrderTraverse(BiTNode *root,Status (*visit)(BiTNode *)){
 	if(root){
@@ -147,6 +151,16 @@ Status DeleteBST_recursion(BiTNode **tree,int target){
 	else if((*tree)->data == target) return Delete(tree);
 	else if(target < (*tree)->data)return DeleteBST_recursion(&(*tree)->lchild,target);
 	else return DeleteBST_recursion(&(*tree)->rchild,target);
+}
+Status isBST(BiTNode *root){
+	if(root == NULL)return true;
+	else{
+		if(root->lchild->data >= root->data)return false;
+		if(root->rchild->data <= root->data)return false;
+		if(isBST(root->lchild) == false)return false;
+		if(isBST(root->rchild) == false)return false;
+		return true;
+	}
 }
 int main(){
 	int a[10]={62,88,58,47,35,73,51,99,37,93};
