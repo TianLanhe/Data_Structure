@@ -72,9 +72,9 @@ Status Left_Balance(BiTNode **node){
 	if(node == NULL || *node == NULL)return ERROR;
 	if((*node)->bf != 2)return ERROR;		//要左旋的根节点的bf必为+2
 	lch=(*node)->lchild;
-	if(lch->bf == 1){						//同符号则直接旋转
-		(*node)->bf=0;
-		lch->bf=0;
+	if(lch->bf == 1 || lch->bf == 0){		//同符号则直接旋转
+		(*node)->bf=0;						//插入不可能出现子树bf为0
+		lch->bf=0;							//当删除时才有可能出现另一边子树bf为0
 		if(Right_Rotate(node) == ERROR)return ERROR;
 	}else if(lch->bf == -1){				//符号不同则根节点的左孩子先反方向(左旋)，再将根节点右旋
 		BiTNode *grandson;
@@ -92,7 +92,7 @@ Status Left_Balance(BiTNode **node){
 		grandson->bf=0;
 		if(Left_Rotate(&(*node)->lchild) == ERROR)return ERROR;	//注意这里不能传入lch，否则无法将改变传回主函数
 		if(Right_Rotate(node) == ERROR)return ERROR;
-	}else return ERROR;				//lch的bf不应该出现0或其他情况
+	}else return ERROR;				//lch的bf不应该出现其他情况
 	return OK;
 }
 Status Right_Balance(BiTNode **node){
@@ -100,9 +100,9 @@ Status Right_Balance(BiTNode **node){
 	if(node == NULL || *node == NULL)return ERROR;
 	if((*node)->bf != -2)return ERROR;		//要左旋的根节点的bf必为-2
 	rch=(*node)->rchild;
-	if(rch->bf == -1){						//同符号则直接旋转
-		(*node)->bf=0;
-		rch->bf=0;
+	if(rch->bf == -1 || rch->bf == 0){		//同符号则直接旋转
+		(*node)->bf=0;						//插入不可能出现子树bf为0
+		rch->bf=0;							//当删除时才有可能出现另一边子树bf为0
 		if(Left_Rotate(node) == ERROR)return ERROR;
 	}else if(rch->bf == 1){					//符号不同则根节点的左孩子先反方向(右旋)，再将根节点左旋
 		BiTNode *grandson;
@@ -120,7 +120,7 @@ Status Right_Balance(BiTNode **node){
 		grandson->bf=0;
 		if(Right_Rotate(&(*node)->rchild) == ERROR)return ERROR;	//注意这里不能传入rch，否则无法将改变传回主函数
 		if(Left_Rotate(node) == ERROR)return ERROR;
-	}else return ERROR;				//注意这里不能传入lch，否则无法将改变传回主函数
+	}else return ERROR;				//lch的bf不应该出现其他情况
 	return OK;
 }
 Status InsertAVL(BiTNode **root,int target,Status *taller){
@@ -288,16 +288,15 @@ Status isAVL(BiTNode *root){
 }
 int main(){
 	BiTNode *root=NULL;
-	int a[10]={62,88,58,47,35,73,51,99,37,93};
+	int a[10]={20,10,30,15,25,40,23,46};//{62,88,58,47,35,73,51,99,37,93};
 	int i;
-	int flag=false;
-	int shorter;
-	for(i=0;i<10;i++)
-		if(InsertAVL(&root,a[i],&shorter) == ERROR)printf("ERROR\n");
+	int flag;
+	for(i=0;i<8;i++)
+		if(InsertAVL(&root,a[i],&flag) == ERROR)printf("ERROR\n");
 	InOrderTraverse(root,PrintBiTree);
 	printf("\n");
 	printf("%d\n",isAVL(root));
-	if(DeleteAVL(&root,93,&shorter) == ERROR)printf("ERROR\n");
+	if(DeleteAVL(&root,15,&flag) == ERROR)printf("ERROR\n");
 	InOrderTraverse(root,PrintBiTree);
 	printf("\n");
 	printf("%d\n",isAVL(root));
