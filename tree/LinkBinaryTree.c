@@ -208,24 +208,52 @@ Status PreOrderTraverse_stack(BiTNode *root, Status(*visit)(BiTNode *)) {
 	TreeStack stack;
 	BiTNode *temp;
 
+	// if(!root)
+	// 	return OK;
+
+	// InitTreeStack(&stack);
+	// temp = root;
+	// if (TreePush(&stack, temp) == ERROR)return ERROR;
+	// if (visit(temp) == ERROR)return ERROR;
+
+	// while (!TStackEmpty(stack)) {
+	// 	while (TStackGetTop(stack, &temp)==OK && temp) {
+	// 		if (TreePush(&stack, temp->lchild) == ERROR)return ERROR;
+	// 		if (temp->lchild)
+	// 			if (visit(temp->lchild)==ERROR)return ERROR;
+	// 	}
+	// 	if (TreePop(&stack, &temp)==ERROR)return ERROR;
+
+	// 	if (!TStackEmpty(stack)) {
+	// 		if (TreePop(&stack, &temp)==ERROR)return ERROR;
+	// 		if (TreePush(&stack, temp->rchild)==ERROR)return ERROR;
+	// 		if (temp->rchild)
+	// 			if (visit(temp->rchild)==ERROR)return ERROR;
+	// 	}
+	// }
+
 	InitTreeStack(&stack);
 	temp = root;
-	if (TreePush(&stack, temp) == ERROR)return ERROR;
-	if (visit(temp) == ERROR)return ERROR;
+	while (temp) {
+		if (TreePush(&stack, temp) == ERROR)return ERROR;
+		if (visit(temp) == ERROR)return ERROR;
+		temp = temp->lchild;
+	}
 
 	while (!TStackEmpty(stack)) {
-		while (TStackGetTop(stack, &temp) && temp) {
-			if (TreePush(&stack, temp->lchild) == ERROR)return ERROR;
-			if (temp->lchild)
-				if (!visit(temp->lchild))return ERROR;
-		}
-		if (!TreePop(&stack, &temp))return ERROR;
-		if (!TStackEmpty(stack)) {
-			if (!TreePop(&stack, &temp))return ERROR;
-			if (!TreePush(&stack, temp->rchild))return ERROR;
-			if (temp->rchild)if (!visit(temp->rchild))return ERROR;
+		if (TreePop(&stack, &temp) == ERROR)return ERROR;
+
+		if (temp->rchild) {
+			temp = temp->rchild;
+			while (temp) {
+				if (TreePush(&stack, temp) == ERROR)return ERROR;
+				if (visit(temp) == ERROR)return ERROR;
+				temp = temp->lchild;
+			}
 		}
 	}
+
+	DestroyTreeStack(&stack);
 	return OK;
 }
 
@@ -280,24 +308,49 @@ Status PostOrderTraverse_stack(BiTNode *root, Status(*visit)(BiTNode *)) {
 	TreeStack stack;
 	BiTNode *temp;
 	BiTNode *pre;
+
 	InitTreeStack(&stack);
 	temp = root;
 	pre = NULL;
-	while (temp || !TStackEmpty(stack)) {
-		if (temp) {
-			TreePush(&stack, temp);
-			temp = temp->lchild;
-		}
-		else if (TStackGetTop(stack, &temp) && (!temp->rchild || temp->rchild == pre)) {
-			TreePop(&stack, &temp);
-			if (!visit(temp))return ERROR;
-			pre = temp;
-			temp = NULL;
+
+	// while (temp || !TStackEmpty(stack)) {
+	// 	if (temp) {
+	// 		TreePush(&stack, temp);
+	// 		temp = temp->lchild;
+	// 	}
+	// 	else if (TStackGetTop(stack, &temp)==OK && (!temp->rchild || temp->rchild == pre)) {
+	// 		TreePop(&stack, &temp);
+	// 		if (!visit(temp))return ERROR;
+	// 		pre = temp;
+	// 		temp = NULL;
+	// 	}
+	// 	else {
+	// 		temp = temp->rchild;
+	// 	}
+	// }
+
+	while (temp) {
+		if (TreePush(&stack, temp) == ERROR)return ERROR;
+		temp = temp->lchild;
+	}
+
+	while (!TStackEmpty(stack)) {
+		if (TStackGetTop(stack, &temp) == ERROR)return ERROR;
+		if (temp->rchild && pre != temp->rchild) {
+			temp = temp->rchild;
+			while (temp) {
+				if (TreePush(&stack, temp) == ERROR)return ERROR;
+				temp = temp->lchild;
+			}
 		}
 		else {
-			temp = temp->rchild;
+			if (visit(temp) == ERROR)return ERROR;
+			pre = temp;
+			if (TreePop(&stack, &temp) == ERROR)return ERROR;
 		}
 	}
+
+	DestroyTreeStack(&stack);
 	return OK;
 }
 
