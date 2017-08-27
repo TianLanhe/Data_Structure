@@ -1,31 +1,9 @@
 #include <stdio.h>
 
-void Hanoi(int n);
-void SubHanoi(int n, char x, char y, char z);
-void move(int i, char x, char y);
-
 void EightQueue();
 void SubEightQueue(int board[][8], int i, int n);
 int isPeace(int board[][8], int i, int j);
 void PrintBoard(int board[][8]);
-
-void Hanoi(int n) {
-	if (n > 0)
-		SubHanoi(n, 'A', 'B', 'C');
-}
-void SubHanoi(int n, char x, char y, char z) {
-	if (n == 1) {
-		move(n, x, y);
-	}
-	else {
-		SubHanoi(n - 1, x, z, y);
-		move(n, x, y);
-		SubHanoi(n - 1, z, y, x);
-	}
-}
-void move(int i, char x, char y) {
-	printf("½«µÚ %d ²ã´Ó %c ÒÆ¶¯µ½ %c.\n", i, x, y);
-}
 
 void EightQueue() {
 	int board[8][8];
@@ -55,13 +33,13 @@ void SubEightQueue(int board[][8], int i, int n) {
 
 int isPeace(int board[][8], int i, int j) {
 	int k, l;
-	for (k = 0; k < i; ++k)	//¼ì²éÊúÏß
+	for (k = 0; k < i; ++k)	//æ£€æŸ¥ç«–çº¿
 		if (board[k][j] == 1)
 			return 0;
-	for (k = i - 1, l = j - 1; k >= 0 && l >= 0; --k, --l)	// ¼ì²é×óÉÏÐ±Ïß
+	for (k = i - 1, l = j - 1; k >= 0 && l >= 0; --k, --l)	// æ£€æŸ¥å·¦ä¸Šæ–œçº¿
 		if (board[k][l] == 1)
 			return 0;
-	for (k = i - 1, l = j + 1; k >= 0 && l < 8; --k, ++l)	// ¼ì²éÓÒÉÏÐ±Ïß
+	for (k = i - 1, l = j + 1; k >= 0 && l < 8; --k, ++l)	// æ£€æŸ¥å³ä¸Šæ–œçº¿
 		if (board[k][l] == 1)
 			return 0;
 	return 1;

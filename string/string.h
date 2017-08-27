@@ -50,5 +50,7 @@ Status StrReplaceFirst(HString *str, HString sub, HString new, int pos);
 //替换串str第pos位置之后的第一个字符ch
 Status StrReplaceAll(HString *str, HString sub, HString new, int pos);
 //替换串str第pos位置之后的第一个字符ch
+char *ToCString(HString *str);
+//返回C语言风格的字符串
 
 #endif

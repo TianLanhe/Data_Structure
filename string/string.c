@@ -6,6 +6,8 @@
 Status InitStr(HString *str) {
 	if (!str)return ERROR;
 	str->ch = (char*)malloc(sizeof(char));
+	if(!str->ch)
+		return OVERFLOW;
 	str->ch[0] = '\0';
 	str->len = 0;
 	return OK;
@@ -206,4 +208,7 @@ Status StrReplaceAll(HString *str, HString sub, HString new, int pos) {
 	while ((index = SubIndex(*str, sub, pos)) != -1)
 		StrReplace(str, new, index, sub.len);
 	return OK;
+}
+char *ToCString(HString *str){
+	return str->ch;
 }
