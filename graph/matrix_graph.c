@@ -171,7 +171,7 @@ int Distance(MGraph graph, int index1, int index2) {
 		return MAXINT;
 	if (index2 < 0 || index2 >= graph.vexnum)
 		return MAXINT;
-	
+
 	return graph.arcs[index1][index2];
 }
 
