@@ -1,12 +1,14 @@
 #include "PriorityQueue.h"
 #include <stdlib.h>
+#include <string.h>
 
-Status InitQueue(PriorityQueue *q, int(*comparator)(QElemType, QElemType)) {
+Status InitQueue(PriorityQueue *q, int elemSize, int(*comparator)(QElemType*, QElemType*)) {
 	if (comparator == NULL || q == NULL)
 		return ERROR;
 	q->comparator = comparator;
 	q->capacity = INITSIZE;
-	q->front = q->rear = (QElemType*)malloc(sizeof(QElemType)*INITSIZE);
+	q->elemSize = elemSize;
+	q->front = q->rear = (QElemType**)malloc(sizeof(QElemType*)*INITSIZE);
 	if (!q->front)
 		return OVERFLOW;
 	return OK;
@@ -15,22 +17,30 @@ Status InitQueue(PriorityQueue *q, int(*comparator)(QElemType, QElemType)) {
 Status DestroyQueue(PriorityQueue *q) {
 	if (!q)
 		return ERROR;
+	QElemType **ptr;
+
+	for (ptr = q->front; ptr != q->rear; ++ptr)
+		free(*ptr);
 	free(q->front);
+
 	q->front = q->rear = NULL;
 	q->comparator = NULL;
-	q->capacity = 0;
+	q->capacity = q->elemSize = 0;
 	return OK;
 }
 
 Status ClearQueue(PriorityQueue *q) {
 	if (!q)
 		return ERROR;
+	QElemType **ptr;
+	for (ptr = q->front; ptr != q->rear; ++ptr)
+		free(*ptr);
 	q->rear = q->front;
 	return OK;
 }
 
-Status SetComparator(PriorityQueue *q, int(**old_cmp)(QElemType, QElemType), int(*new_cmp)(QElemType, QElemType)) {
-	int(*func)(QElemType, QElemType);
+Status SetComparator(PriorityQueue *q, int(**old_cmp)(QElemType*, QElemType*), int(*new_cmp)(QElemType*, QElemType*)) {
+	int(*func)(QElemType*, QElemType*);
 	if (new_cmp == NULL)
 		return ERROR;
 
@@ -39,12 +49,12 @@ Status SetComparator(PriorityQueue *q, int(**old_cmp)(QElemType, QElemType), int
 		*old_cmp = q->comparator;
 
 	q->comparator = func;
-	return UpdateOrder(q);
+	return QueueEmpty(*q) ? OK : UpdateOrder(q);
 }
 
 Status UpdateHead(PriorityQueue *q) {
-	QElemType *ptr;
-	QElemType temp;
+	QElemType **ptr;
+	QElemType *temp;
 	int size, cur, i;
 
 	if (!q || QueueEmpty(*q))
@@ -69,8 +79,8 @@ Status UpdateHead(PriorityQueue *q) {
 }
 
 Status UpdateTail(PriorityQueue *q) {
-	QElemType *ptr;
-	QElemType temp;
+	QElemType **ptr;
+	QElemType *temp;
 	int cur, parent;
 
 	if (!q || QueueEmpty(*q))
@@ -94,8 +104,8 @@ Status UpdateOrder(PriorityQueue *q) {
 	int i;
 	int cur, child;
 	int size;
-	QElemType *ptr;
-	QElemType temp;
+	QElemType **ptr;
+	QElemType *temp;
 
 	if (!q || QueueEmpty(*q))
 		return ERROR;
@@ -128,18 +138,23 @@ int QueueLength(PriorityQueue q) {
 	return q.rear - q.front;
 }
 
-Status EnQueue(PriorityQueue *q, QElemType e) {
+Status EnQueue(PriorityQueue *q, QElemType *e) {
 	if (!q)
 		return ERROR;
 	if (QueueLength(*q) == q->capacity) {
-		q->front = (QElemType*)realloc(q->front, sizeof(QElemType)*(q->capacity + INCREMENT));
+		q->front = (QElemType**)realloc(q->front, sizeof(QElemType)*(q->capacity + INCREMENT));
 		if (!q->front)
 			return OVERFLOW;
 
 		q->rear = q->front + q->capacity;
 		q->capacity += INCREMENT;
 	}
-	*(q->rear) = e;
+	QElemType *elem = (QElemType*)malloc(q->elemSize);
+	if (!elem)
+		return OVERFLOW;
+
+	memcpy(elem, e, q->elemSize);
+	*(q->rear) = elem;
 	++(q->rear);
 
 	return UpdateTail(q);
@@ -152,22 +167,23 @@ Status DeQueue(PriorityQueue *q, QElemType *e) {
 	if (QueueEmpty(*q))
 		return ERROR;
 
-	*e = *(q->front);
+	memcpy(e, *q->front, q->elemSize);
+	free(*q->front);
 	--(q->rear);
 	*(q->front) = *(q->rear);
 
-	return UpdateHead(q);
+	return QueueEmpty(*q) ? OK : UpdateHead(q);
 }
 
 Status GetHead(PriorityQueue q, QElemType *e) {
 	if (QueueEmpty(q))
 		return ERROR;
-	*e = *(q.front);
+	memcpy(e, *q.front, q.elemSize);
 	return OK;
 }
 
-Status QueueTraverse(PriorityQueue q, Status(*visit)(QElemType)) {
-	QElemType *ptr;
+Status QueueTraverse(PriorityQueue q, Status(*visit)(QElemType*)) {
+	QElemType **ptr;
 	Status status;
 	for (ptr = q.front; ptr != q.rear; ++ptr)
 		if ((status = visit(*ptr)) != OK)
