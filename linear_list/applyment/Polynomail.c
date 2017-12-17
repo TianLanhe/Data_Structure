@@ -66,7 +66,10 @@ Status DestroyPolyn(polynomail *p) {
 }
 void PrintPolyn(polynomail p) {
 	Link *pt;
-	if (ListEmpty(p))return;
+	if (ListEmpty(p)){
+		printf("y=0\n");
+		return;
+	}
 	printf("y=");
 	for (pt = (p.head)->next; pt; pt = pt->next) {
 		if (pt != GetHead(p))printf("%c", pt->data->coef > 0 ? '+' : '-');
@@ -114,7 +117,8 @@ void AddPolyn(polynomail *pa, polynomail *pb) {
 		}
 	}
 	if (ha)hc->next = ha;
-	if (hb)hc->next = hb;
+	else if (hb)hc->next = hb;
+	else hc->next = NULL;
 	pb->head->next = NULL;
 	DestroyPolyn(pb);
 	pa->tail = GetLast(*pa);

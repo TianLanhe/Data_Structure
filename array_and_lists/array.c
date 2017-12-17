@@ -6,50 +6,44 @@ Status InitArray(Array *arr, int dim, ...) {	//dim±íÊ¾Î¬Êı£¬½ÓÏÂÀ´½Ó×Ådim¸öÕûÊı£
 	int i, elemnum;
 	va_list ap;
 
-	if (dim<1 || dim>MAX_ARRAY_DIM)
-		return ERROR;
+	CHECK_ERROR(dim >= 1 && dim <= MAX_ARRAY_DIM);
 
 	arr->dim = dim;
 	arr->bounds = (int *)malloc(sizeof(int)*dim); //boundsÊÇ³¤¶ÈÎªdimµÄÊı×é£¬´æÃ¿Ò»Î¬¶ÈµÄ³¤¶È
-	if (!arr->bounds)
-		return OVERFLOW;
+	CHECK_OVERFLOW(arr->bounds);
 
 	arr->constants = (int *)malloc(sizeof(int)*dim);
-	if (!arr->constants)
-		return OVERFLOW;
+	CHECK_OVERFLOW(arr->constants);
 
 	va_start(ap, dim);
 	for (i = 0, elemnum = 1; i < dim; i++) {
 		arr->bounds[i] = va_arg(ap, int);
-		if (arr->bounds[i] <= 0)
-			return ERROR;
+		CHECK_ERROR(arr->bounds[i] > 0);
+
 		elemnum *= arr->bounds[i];			//Êı×é×Ü¸öÊıµÈÓÚÃ¿Ò»Î¬³¤¶ÈÏà³Ë£¬²»ÊÇÏà¼Ó
 	}
 	va_end(ap);
 
 	arr->base = (ElemType *)calloc(elemnum, sizeof(ElemType));
-	if (!arr->base)
-		return OVERFLOW;
+	CHECK_OVERFLOW(arr->base);
 
 	arr->constants[dim - 1] = 1;			//ÈôÊı×éÎ¬¶ÈÎª3£¬Ã¿Î¬³¤¶ÈÎª[3][4][3]£¬Ôòconstants³¤¶ÈÎª3£¬ÔªËØÄÚÈİÎª{4*3,3,1}
 	for (i = dim - 2; i >= 0; i--)				//±íÊ¾Ã¿Ò»Î¬µÄÈ¨£¬µÚÈıÎ¬¿çÔ½12¸öÔªËØ£¬µÚ¶şÎ¬¿çÔ½3¸öÎ¬¶È£¬ÒÔ´ËÀàÍÆ
 		arr->constants[i] = arr->bounds[i + 1] * arr->constants[i + 1];
+
 	return OK;
 }
 
 Status DestroyArray(Array *arr) {
-	if (!arr->base)
-		return ERROR;
+	CHECK_ERROR(arr->base);
 	free(arr->base);
 	arr->base = NULL;
 
-	if (!arr->bounds)
-		return ERROR;
+	CHECK_ERROR(arr->bounds);
 	free(arr->bounds);
 	arr->bounds = NULL;
 
-	if (!arr->constants)
-		return ERROR;
+	CHECK_ERROR(arr->constants);
 	free(arr->constants);
 	arr->constants = NULL;
 
@@ -66,8 +60,8 @@ Status Value(Array arr, ElemType *e, ...) {
 	va_start(ap, e);						//°ÑeÖ®ºóµÄ²ÎÊıµØÖ··ÅÔÚapÖĞ
 	for (i = 0, add = arr.base; i < arr.dim; i++) {
 		bounds = va_arg(ap, int);			//ÌáÈ¡³öÃ¿Î¬µÄ³¤¶Èbounds£¬²¢ÅĞ¶ÏºÏ·¨ĞÔ
-		if (bounds<0 || bounds>arr.bounds[i] - 1)
-			return ERROR;
+		CHECK_ERROR(bounds >= 0 && bounds <= arr.bounds[i] - 1);
+
 		add += arr.constants[i] * bounds;		//È·¶¨ÄÇ¸öµØÖ·£¬Èç[1][1][1]£¬Ôòadd=1*12+1*3+1*1=16.
 	}
 	va_end(ap);
@@ -85,7 +79,7 @@ Status Assign(Array *arr, ElemType e, ...) {
 	va_start(ap, e);
 	for (i = 0, add = arr->base; i < arr->dim; i++) {
 		bounds = va_arg(ap, int);
-		if (bounds<0 || bounds>arr->bounds[i] - 1)return ERROR;
+		CHECK_ERROR(bounds >= 0 && bounds <= arr.bounds[i] - 1);
 		add += arr->constants[i] * bounds;
 	}
 	va_end(ap);

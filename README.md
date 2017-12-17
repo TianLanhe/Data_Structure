@@ -1,7 +1,12 @@
 数据结构源码集
 ========
 
-### 目录
+## 简介
+
+以严蔚敏版《数据结构》为参考，实现书中抽象数据类型及其应用。涉及线性表、栈、队列、稀疏矩阵、广义表、串、二叉树、图等数据结构，包含KMP模式匹配
+递归、括号匹配、数制转换、排序、搜索等常用的算法与应用。
+
+## 目录
 
 * [array_and_lists](/array_and_lists)
     * array.c
@@ -101,6 +106,53 @@
         * huffmanTreeCoding.c
 * DataStructureBase.h
 * README.md
+
+## 说明
+
+`DataStructureBase.h`头文件包含了基本的类型说明与预定义值。约定一般函数均返回状态，状态类型为Status，可取以下四种值。同时包含了用于检测状态的宏，常用于测试和判断函数返回值
+
+```c
+#define OK 0
+#define ERROR 1
+#define OVERFLOW -2
+#define INFEASIBLE -1
+#define true 1
+#define false 0
+
+typedef int Status;
+```
+
+可使用下面三个配套的宏用于测试函数状态返回值，若函数操作不成功，则退出函数
+
+```c
+#define BEFORE_CHECK_RESULT()   \
+    Status __status;
+
+#define CHECK_RESULT(func)      \
+    if((__status = func)!=OK){  \
+        return __status;        \
+    }                           \
+
+#define AFTER_CHECK_RESULT()    \
+    return OK
+```
+
+可使用以下宏用于判断变量内存是否分配成功，常用于动态分配之后
+
+```c
+#define CHECK_OVERFLOW(var)     \
+    if(!var){                   \
+        return OVERFLOW;        \
+    }
+```
+
+可使用以下的宏用于类似断言的场景，若不符合断言，则返回ERROR
+
+```c
+#define CHECK_ERROR(exp)        \
+    if(!(exp))                  \
+        return ERROR
+```
 
 __[回到顶部](#数据结构源码集)__
 --------

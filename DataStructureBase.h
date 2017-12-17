@@ -14,4 +14,24 @@
 
 typedef int Status;
 
+#define BEFORE_CHECK_RESULT()	\
+	Status __status;
+
+#define CHECK_RESULT(func)		\
+	if((__status = func)!=OK){	\
+		return __status;		\
+	}							\
+
+#define AFTER_CHECK_RESULT()	\
+	return OK
+
+#define CHECK_OVERFLOW(var)		\
+	if(!var){					\
+		return OVERFLOW;		\
+	}
+
+#define CHECK_ERROR(exp)		\
+	if(!(exp))					\
+		return ERROR
+
 #endif

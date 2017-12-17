@@ -4,11 +4,11 @@
 #include <string.h>
 
 Status InitGList(GLNode **glist) {
-	if (!glist)
-		return ERROR;
+	CHECK_ERROR(glist);
+
 	*glist = (GLNode *)malloc(sizeof(GLNode));
-	if (!(*glist))
-		return OVERFLOW;
+	CHECK_OVERFLOW(glist);
+
 	(*glist)->tag = LIST;
 	(*glist)->hp = NULL;
 	(*glist)->next = NULL;
@@ -39,15 +39,17 @@ Status RemBracket(char **substr, char *str) {
 	int len;
 	int i;
 	len = strlen(str);
-	if (str[0] != '(' || str[len - 1] != ')')
-		return ERROR;
+	CHECK_ERROR(str[0] == '(' && str[len - 1] == ')');
+
 	(*substr) = (char *)malloc(sizeof(char)*(len - 1));
-	if (!(*substr))
-		return OVERFLOW;
-	for (i = 1; i < len - 1; i++)(*substr)[i - 1] = str[i];
+	CHECK_OVERFLOW(*substr);
+
+	for (i = 1; i < len - 1; i++)
+		(*substr)[i - 1] = str[i];
 	(*substr)[i - 1] = '\0';
 	return OK;
 }
+
 Status SplitStr(char ***arrstr, char *astr, int *len) {
 	int i, k, num;
 	int start;
@@ -55,13 +57,11 @@ Status SplitStr(char ***arrstr, char *astr, int *len) {
 	// 复制原字符串，可以用来修改，不会影响到原字符串
 	char *str;
 	str = (char*)malloc(sizeof(char)*(strlen(astr) + 1));
-	if (!str)
-		return OVERFLOW;
+	CHECK_OVERFLOW(str);
 	strcpy(str, astr);
 
 	(*arrstr) = (char **)malloc(sizeof(char*)*(strlen(str) + 1));
-	if (!(*arrstr))
-		return OVERFLOW;
+	CHECK_OVERFLOW(*arrstr);
 
 	start = 0;
 	k = 0;
@@ -73,8 +73,7 @@ Status SplitStr(char ***arrstr, char *astr, int *len) {
 			str[i] = '\0';
 			if (strlen(str + start) != 0) {
 				(*arrstr)[num] = (char*)malloc(sizeof(char)*(strlen(str + start) + 1));
-				if (!(*arrstr)[num])
-					return OVERFLOW;
+				CHECK_OVERFLOW((*arrstr)[num]);
 
 				strcpy((*arrstr)[num], str + start);
 				++num;
@@ -85,8 +84,7 @@ Status SplitStr(char ***arrstr, char *astr, int *len) {
 	}
 	if (strlen(str + start) != 0) {
 		(*arrstr)[num] = (char*)malloc(sizeof(char)*(strlen(str + start) + 1));
-		if (!(*arrstr)[num])
-			return OVERFLOW;
+		CHECK_OVERFLOW((*arrstr)[num]);
 
 		strcpy((*arrstr)[num], str + start);
 		++num;
@@ -94,13 +92,14 @@ Status SplitStr(char ***arrstr, char *astr, int *len) {
 	*len = num;
 
 	(*arrstr) = (char **)realloc(*arrstr, sizeof(char*)*num);
-	if (!(*arrstr))
-		return OVERFLOW;
+	CHECK_OVERFLOW(*arrstr);
 	free(str);
 	return OK;
 }
+
 Status CreateGList(GLNode **glist, char *str) {
-	InitGList(glist);
+	BEFORE_CHECK_RESULT();
+	CHECK_RESULT(InitGList(glist));
 	if (strlen(str) == 1) {
 		(*glist)->tag = ATOM;
 		(*glist)->atom = *str;
@@ -110,14 +109,13 @@ Status CreateGList(GLNode **glist, char *str) {
 		char **splitstr;
 		int n, i;
 		GLNode *temp, *p;
-		Status status;
 
-		if ((status = RemBracket(&substr, str)) != OK)return status;
-		if ((status = SplitStr(&splitstr, substr, &n)) != OK)return status;
+		CHECK_RESULT(RemBracket(&substr, str));
+		CHECK_RESULT(SplitStr(&splitstr, substr, &n));
 		free(substr);
 
 		for (i = 0, p = *glist; i < n; i++) {
-			CreateGList(&temp, splitstr[i]);
+			CHECK_RESULT(CreateGList(&temp, splitstr[i]));
 			if (!i) {
 				p->hp = temp;
 				p = p->hp;
@@ -132,8 +130,9 @@ Status CreateGList(GLNode **glist, char *str) {
 			free(splitstr[i]);
 		free(splitstr);
 	}
-	return OK;
+	AFTER_CHECK_RESULT();
 }
+
 Status PrintGList(GLNode *glist) {
 	if (glist->tag == ATOM)printf("%c", glist->atom);
 	else if (!glist->hp)printf("()");
@@ -148,7 +147,9 @@ Status PrintGList(GLNode *glist) {
 	}
 	return OK;
 }
+
 Status CopyGList(GLNode **newglist, GLNode *glist) {
+
 	InitGList(newglist);
 	if (glist->tag == ATOM) {
 		(*newglist)->tag = ATOM;
@@ -172,26 +173,31 @@ Status CopyGList(GLNode **newglist, GLNode *glist) {
 	}
 	return OK;
 }
+
 int GListLength(GLNode *glist) {
 	int i;
 	if (!glist || !glist->hp)return 0;
 	for (glist = glist->hp, i = 0; glist; glist = glist->next, i++);
 	return i;
 }
+
 Status GListEmpty(GLNode *glist) {
 	if (!glist || !glist->hp)return true;
 	else return false;
 }
+
 GLNode *GetGLHead(GLNode *glist) {
 	if (!glist || !glist->hp)
 		return NULL;
 	return glist->hp;
 }
+
 GLNode *GetGLTail(GLNode *glist) {
 	if (!glist || !glist->hp)
 		return NULL;
 	return glist->hp->next;
 }
+
 int GListDepth(GLNode *glist) {
 	if (glist->tag == LIST && !glist->hp)return 1;
 	if (glist->tag == ATOM)return 0;
@@ -202,26 +208,30 @@ int GListDepth(GLNode *glist) {
 			max = GListDepth(node);
 	return max + 1;
 }
+
 Status InsetFirst_GL(GLNode **glist, GLNode *node) {
 	GLNode *head;
-	if (!glist || !*glist || !node)return ERROR;
+	CHECK_ERROR(glist && *glist && node);
 	CopyGList(&head, node);
 	head->next = (*glist)->hp;
 	(*glist)->hp = head;
 	return OK;
 }
+
 Status DeleteFirst_GL(GLNode **glist, GLNode **node) {
-	if (!glist || !*glist || !(*glist)->hp)return ERROR;
+	CHECK_ERROR(glist && *glist && (*glist)->hp);
 	*node = (*glist)->hp;
 	(*glist)->hp = (*glist)->hp->next;
 	(*node)->next = NULL;
 	return OK;
 }
+
 Status Add(GLNode *node) {
-	if (!node || !node->tag == ATOM)return ERROR;
+	CHECK_ERROR(node && node->tag == ATOM);
 	node->atom++;
 	return OK;
 }
+
 Status TraverseGList(GLNode *glist, Status(*visit)(GLNode*)) {
 	if (!glist || !glist->hp)
 		return ERROR;

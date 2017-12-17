@@ -3,26 +3,6 @@
 #include <stdlib.h>
 //#define MY_DEBUG			//用于调试的宏
 
-#define BEFORE_CHECK_RESULT()	\
-	Status __status;
-
-#define CHECK_RESULT(func)		\
-	if((__status = func)!=OK){	\
-		return __status;		\
-	}							\
-
-#define AFTER_CHECK_RESULT()	\
-	return OK
-
-#define CHECK_OVERFLOW(var)		\
-	if(!var){					\
-		return OVERFLOW;		\
-	}
-
-#define CHECK_ERROR(exp)		\
-	if(!(exp))					\
-		return ERROR
-
 typedef enum _type {
 	ARRIVE,				//到达事件
 	LEAVE				//离开事件
