@@ -72,10 +72,15 @@ void PrintPolyn(polynomail p) {
 	}
 	printf("y=");
 	for (pt = (p.head)->next; pt; pt = pt->next) {
-		if (pt != GetHead(p))printf("%c", pt->data->coef > 0 ? '+' : '-');
-		if (fabs(pt->data->coef) > 1)printf("%.2f", pt->data->coef);
-		printf("x");
-		if (pt->data->expn != 1)printf("^%d", pt->data->expn);
+		if (pt != GetHead(p))
+			printf("%c", pt->data->coef > 0 ? '+' : '-');
+		if (fabs(pt->data->coef) > 1 || pt->data->expn == 0)
+			printf("%.2f", pt->data->coef);
+
+		if(pt->data->expn != 0){
+			printf("x");
+			if (pt->data->expn != 1)printf("^%d", pt->data->expn);
+		}
 	}
 	printf("\n");
 }
