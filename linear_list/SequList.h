@@ -27,7 +27,7 @@ Status GetPriorElem(Sequlist list, ElemType e, ElemType *p);
 Status GetNextElem(Sequlist list, ElemType e, ElemType *n);
 //取得顺序表list中元素e的后继存放在n中，若e是最后一个，则操作失败返回ERROR，否则返回OK
 Status ListInsert(Sequlist *list, int position, ElemType e);
-//在顺序表list的position位置[0,len-1]插入数据元素e。若position位置非法或list已满，返回ERROR
+//在顺序表list的position位置[0,len]插入数据元素e。若position位置非法或list已满，返回ERROR
 Status ListDelete(Sequlist *list, int position, ElemType *e);
 //删除顺序表list的position位置上的数据元素，储存在e中，若position位置非法返回ERROR
 Status GetElem(Sequlist list, int position, ElemType *e);

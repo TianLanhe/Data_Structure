@@ -16,6 +16,8 @@ Status SelectMin(HTNode *HT, int length, int *pos1, int *pos2);
 //寻找两个权重最小，且parent==-1，即没有父亲结点的两个结点，返回到pos1和pos2中
 Status HuffmanCoding(HTNode *HT, char ***HC);
 //根据赫夫曼树，求叶子结点的赫夫曼编码（字符串表示），将一系列字符串存储在二维数组HC中
+Status HuffmanDeCoding(HTNode *HT, const char *str, const char *characters, char **decode);
+//赫夫曼树译码，传入构造出的赫夫曼树，编码的01字符序列，以及赫夫曼树对应的字符，解码出原文字符串储存在decode中
 
 Status HuffmanTreeMaking(HTNode **HT, int *w, int n) {
 	int i;
@@ -112,6 +114,41 @@ Status HuffmanCoding(HTNode *HT, char ***HC) {
 	return OK;
 }
 
+Status HuffmanDeCoding(HTNode *HT, const char *str, const char *characters, char **decode) {
+	int nodenum, i, index;
+	int size = 0;
+
+	if (!HT || !str || !decode)
+		return ERROR;
+
+	*decode = (char*)malloc(sizeof(char) * (strlen(str) + 1));
+
+	for (i = 0; HT[i].parent != -1; i++);	//这里根据上述构建规则，HT的最后一个结点为根节点
+	nodenum = i + 1;						//最后一个节点的下标值加一即为结点总个数
+
+	index = nodenum - 1;
+	for (i = 0; str[i] != '\0'; ++i) {
+		if (str[i] == '0') {
+			index = HT[index].lchild;
+		}
+		else if (str[i] == '1') {
+			index = HT[index].rchild;
+		}
+		else {
+			printf("非01序列，解码失败！\n");
+			return ERROR;
+		}
+
+		if (HT[index].lchild == -1 || HT[index].rchild == -1) {
+			(*decode)[size++] = characters[index];
+			index = nodenum - 1;
+		}
+	}
+	(*decode)[size] = '\0';
+	(*decode) = (char*)realloc(*decode, sizeof(char)*(strlen(*decode) + 1));
+	return OK;
+}
+
 int main() {
 	int weight[8] = { 5,29,7,8,14,23,3,11 };
 	int i;
@@ -130,5 +167,98 @@ int main() {
 	for (i = 0; i < 8; ++i)
 		free(ch[i]);
 	free(ch);
+
+	// FILE *file;
+	// int ascii[129] = { 0 };
+	// char filename[100];
+	// char character;
+	// int i,j,c,count;
+	// int length;
+
+	// int weight[128];
+	// char characters[128];
+	// int size;
+	// char *codingline;
+	// char *decodeline;
+
+	// HTNode *HT;
+	// char **ch;
+
+	// printf("请输入读取的文件：");
+	// scanf("%s", filename);
+
+	// file = fopen(filename, "r");
+	// if (file == NULL) {
+	// 	printf("文件不存在或打开错误！\n");
+	// 	return 1;
+	// }
+
+	// // 统计每个字母出现的次数
+	// size = 0;	// 记录出现了多少个不同的字符
+	// count = 0;	// 记录一共有多少个字符
+	// while (!feof(file)) {
+	// 	character = fgetc(file);
+	// 	if (character > 0 && character < 128 && isprint(character)) {
+	// 		++count;
+	// 		if (ascii[character] == 0)
+	// 			++size;
+	// 		++ascii[character];
+	// 	}
+	// }
+
+	// // 将字母和次数分开储存在数组中
+	// c = 0;
+	// for (i=0; i<129; ++i) {
+	// 	if (ascii[i]) {
+	// 		characters[c] = i;
+	// 		weight[c++] = ascii[i];
+	// 	}
+	// }
+	
+	// // 传入权值那个数组，用于构造一棵哈夫曼树
+	// HuffmanTreeMaking(&HT, weight, size);
+
+	// // 根据哈夫曼树进行哈夫曼编码
+	// HuffmanCoding(HT, &ch);
+
+	// // 打印每个字符对应的编码规则
+	// for (i = 0; i < size; ++i) {
+	// 	printf("%c : %s\n", characters[i], ch[i]);
+	// }
+
+	// printf("未进行编码之前传输需要 %d 字节， %d 位\n", count, count * 8);	//	有多少字符就有多少字节，乘以8得位数
+
+	// // 将编码后的字符进行拼接，组成编码字符串并输出
+	// fseek(file, 0, 0);
+	// codingline = (char*)malloc(sizeof(char) * 100000);
+	// codingline[0] = '\0';
+	// while (!feof(file)) {
+	// 	character = fgetc(file);
+	// 	if (character > 0 && character < 128 && isprint(character)) {
+	// 		for (j = 0; j < size; ++j) {
+	// 			if (characters[j] == character) {
+	// 				strcat(codingline, ch[j]);
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// printf("编码后的数据：%s\n", codingline);
+
+	// length = strlen(codingline);
+
+	// printf("编码后数据传输需要 %.2f 字节， %d 位\n", length*1.0 / 8, length);
+	// printf("编码压缩比为:%.2f%%\n", length*100.0 / 8 / count);
+
+	// HuffmanDeCoding(HT,codingline,characters,&decodeline);
+	// printf("%s\n",decodeline);
+
+	// free(codingline);
+	// free(HT);
+	// for (i = 0; i < size; ++i)
+	// 	free(ch[i]);
+	// free(ch);
+	// free(decodeline);
+
 	return 0;
 }
