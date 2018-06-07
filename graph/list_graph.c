@@ -128,10 +128,7 @@ Status DestroyGraph(ALGraph *graph) {
 
 	if (!graph || (graph->vexnum == 0 && graph->arcnum == 0))
 		return ERROR;
-
-	graph->vexnum = 0;
-	graph->arcnum = 0;
-	graph->kind = 0;
+	
 	for (i = 0; i < graph->vexnum; i++) {				//ÊÍ·Å±ß±í
 		arcnode = graph->vertices[i].firstarc;
 		while (arcnode) {
@@ -142,6 +139,10 @@ Status DestroyGraph(ALGraph *graph) {
 		graph->vertices[i].firstarc = NULL;
 		graph->vertices[i].vexno = -1;
 	}
+
+	graph->vexnum = 0;
+	graph->arcnum = 0;
+	graph->kind = 0;
 	return OK;
 }
 
