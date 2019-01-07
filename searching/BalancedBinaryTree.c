@@ -26,6 +26,23 @@ Status PrintBiTree(BiTNode *node) {
 	return OK;
 }
 
+void PrintBiTreeFriendly(BiTNode *root) {
+	printf("\n");
+	PrintBiTreeFriendly_sub(root, 0);
+	printf("\n");
+}
+
+void PrintBiTreeFriendly_sub(BiTNode *root, int indent) {
+	if (root) {
+		int i;
+		PrintBiTree_sub(root->rchild, indent + INDENT);
+		for (i = 0; i < indent; ++i)
+			printf("%c", ' ');
+		printf("%d\n", root->data);
+		PrintBiTree_sub(root->lchild, indent + INDENT);
+	}
+}
+
 Status Left_Rotate(BiTNode **node) {
 	BiTNode *lr;
 	if (node == NULL || *node == NULL)
@@ -170,7 +187,7 @@ Status InsertAVL(BiTNode **root, int target, Status *taller) {
 		return ERROR;
 	}
 	else if (target < (*root)->data) {	//对左子树进行搜索并插入
-		if ((status = InsertAVL(&(*root)->lchild, target, taller)) != ERROR)
+		if ((status = InsertAVL(&(*root)->lchild, target, taller)) != OK)
 			return status;
 		if (*taller == true) {			//插入成功后，对上面的节点进行判断，看是否需要旋转
 			switch ((*root)->bf) {

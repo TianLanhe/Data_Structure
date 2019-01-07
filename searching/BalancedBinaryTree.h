@@ -8,6 +8,7 @@
 #define EH (0)		//等高
 #define LOH (2)		//左失衡
 #define ROH (-2)	//右失衡
+#define INDENT (2)	//打印时的缩进格数
 
 typedef struct _bitree {
 	int data;
@@ -22,6 +23,10 @@ Status InOrderTraverse(BiTNode *root, Status(*visit)(BiTNode *));
 //中序遍历(递归法)二叉树root，对每个结点调用函数visit一次且仅一次，一旦调用失败，操作失败
 Status PrintBiTree(BiTNode *node);
 //遍历函数的功能函数，打印节点的数据值
+void PrintBiTreeFriendly(BiTNode *root);
+//凹入表打印友好的树形界面，省略缩进参数
+void PrintBiTreeFriendly_sub(BiTNode *root, int indent) {
+//打印树形界面的子函数
 
 Status Left_Rotate(BiTNode **root);
 //将以root为根的子树进行左旋处理，并使root指向旋转后的根
