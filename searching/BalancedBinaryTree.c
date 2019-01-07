@@ -285,7 +285,7 @@ Status DeleteAVL_sub(BiTNode **root, int target, Status *shorter, Status *flag) 
 						break;
 					case -1:(*root)->bf--;
 						if (Right_Balance(root) == ERROR)return ERROR;
-						*shorter = false;
+						*shorter = true;
 						break;
 					default:return ERROR;
 					}
