@@ -25,7 +25,7 @@ Status PrintBiTree(BiTNode *node);
 //遍历函数的功能函数，打印节点的数据值
 void PrintBiTreeFriendly(BiTNode *root);
 //凹入表打印友好的树形界面，省略缩进参数
-void PrintBiTreeFriendly_sub(BiTNode *root, int indent) {
+void PrintBiTreeFriendly_sub(BiTNode *root, int indent);
 //打印树形界面的子函数
 
 Status Left_Rotate(BiTNode **root);
